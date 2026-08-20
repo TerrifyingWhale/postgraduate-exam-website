@@ -104,7 +104,7 @@ export const coCacheBasicsArticle: KnowledgeArticleData = {
         {
           id: 'kb-co-cache-address-3',
           type: 'paragraph',
-          text: String.raw`**组号（index）**用于缩小搜索范围：
+          text: String.raw`**组号**（index）用于缩小搜索范围：
 
 - 直接映射：组号就是 cache 块号，位数 = $\log_2(\text{cache 块数})$。
 - 组相联：位数 = $\log_2(\text{cache 组数})$。
@@ -113,7 +113,7 @@ export const coCacheBasicsArticle: KnowledgeArticleData = {
         {
           id: 'kb-co-cache-address-4',
           type: 'paragraph',
-          text: '**标记（tag）**用于在候选块中判断是否真正命中，位数 = 物理地址位数 − 组号位数 − 偏移位数。\n\n**访存方法**分三步：\n\n1. 用组号找到组。\n2. 组内比较 tag。\n3. 用块内偏移取出数据。',
+          text: '**标记**（tag）用于在候选块中判断是否真正命中，位数 = 物理地址位数 − 组号位数 − 偏移位数。\n\n**访存方法**分三步：\n\n1. 用组号找到组。\n2. 组内比较 tag。\n3. 用块内偏移取出数据。',
         },
         {
           id: 'kb-co-cache-address-6',

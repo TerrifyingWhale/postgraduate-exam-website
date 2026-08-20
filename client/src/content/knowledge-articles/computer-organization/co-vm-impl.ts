@@ -1,5 +1,5 @@
 import type { KnowledgeArticleData } from '@/content/knowledge-articles/types'
-import virtualMemoryImpl from '@/assets/computer-organization/vm/virtual-memory-impl.svg'
+import { virtualMemoryTranslationAnimation } from '@/animations/computer-organization/vm/virtual-memory-translation'
 import pageFaultFlow from '@/assets/computer-organization/vm/page-fault-flow.svg'
 
 export const coVmImplArticle: KnowledgeArticleData = {
@@ -160,13 +160,12 @@ export const coVmImplArticle: KnowledgeArticleData = {
         },
         {
           id: 'kb-co-vm-mmu-6',
-          type: 'image',
-          src: virtualMemoryImpl,
-          alt: '虚拟存储器实现：VPN 经多级页表映射到物理页框号，页表项含 valid 与下一级页表地址',
+          type: 'animation',
+          animation: virtualMemoryTranslationAnimation,
           sourceImport: {
-            path: '@/assets/computer-organization/vm/virtual-memory-impl.svg',
-            localName: 'virtualMemoryImpl',
-            kind: 'default',
+            path: '@/animations/computer-organization/vm/virtual-memory-translation',
+            localName: 'virtualMemoryTranslationAnimation',
+            kind: 'named',
           },
         },
       ],
