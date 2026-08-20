@@ -1,5 +1,5 @@
 import type { KnowledgeArticleData } from '@/content/knowledge-articles/types'
-import interruptPriority from '@/assets/computer-organization/interrupt/interrupt-priority.svg'
+import { interruptPriorityAnimation } from '@/animations/computer-organization/interrupt/interrupt-priority'
 
 export const interruptArticle: KnowledgeArticleData = {
   pointId: 'co-interrupt',
@@ -214,24 +214,23 @@ export const interruptArticle: KnowledgeArticleData = {
         {
           id: 'kb-co-interrupt-3-4',
           type: 'paragraph',
-          text: '例如四个中断源优先级 A > B > C > D，执行 B 的 ISR 时屏蔽字设为允许 A、屏蔽 B/C/D。A 可以打断 B，C、D 只能等待。',
+          text: '例如四个中断源的**响应优先级**为 A > B > C > D，通过屏蔽字把**处理优先级**调整为 A > D > C > B。执行 B 的 ISR 时装入 0100，只屏蔽 B 自身，C、D 仍可打断 B；若 C、D 同时请求，先按响应优先级进入 C，随后 D 还能继续打断 C。',
         },
         {
           id: 'kb-co-interrupt-3-5',
           type: 'callout',
-          title: '屏蔽不改变优先级',
-          text: '中断屏蔽字不改变优先级，只保证只有更高优先级的中断才能嵌套。单重中断直接关中断，无需屏蔽字。',
+          title: '响应顺序与处理顺序要分开',
+          text: '中断屏蔽字不改变硬件的响应优先级，但会改变中断能否嵌套，从而改变实际处理完成的先后顺序。单重中断直接关中断，无需屏蔽字。',
           tone: 'blue',
         },
         {
           id: 'kb-co-interrupt-3-6',
-          type: 'image',
-          src: interruptPriority,
-          alt: '中断优先级判断：A 程序被 B、C、D 依次打断的嵌套时间图，及各级中断屏蔽字表，标注响应优先级与处理优先级',
+          type: 'animation',
+          animation: interruptPriorityAnimation,
           sourceImport: {
-            path: '@/assets/computer-organization/interrupt/interrupt-priority.svg',
-            localName: 'interruptPriority',
-            kind: 'default',
+            path: '@/animations/computer-organization/interrupt/interrupt-priority',
+            localName: 'interruptPriorityAnimation',
+            kind: 'named',
           },
         },
       ],

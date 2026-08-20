@@ -1,5 +1,5 @@
 import type { KnowledgeArticleData } from '@/content/knowledge-articles/types'
-import aluFlagsCircuit from '@/assets/computer-organization/arithmetic/alu-flags-circuit.svg'
+import { aluFlagsCircuitAnimation } from '@/animations/computer-organization/arithmetic/alu-flags-circuit'
 
 export const aluArticle: KnowledgeArticleData = {
   pointId: 'co-alu',
@@ -149,13 +149,12 @@ export const aluArticle: KnowledgeArticleData = {
         },
         {
           id: 'kb-co-alu-2-5',
-          type: 'image',
-          src: aluFlagsCircuit,
-          alt: 'SUB 控制多路选择器与 Cin，并输出 ZF、OF、F、SF、CF、Cout 的加减法器电路图',
+          type: 'animation',
+          animation: aluFlagsCircuitAnimation,
           sourceImport: {
-            path: '@/assets/computer-organization/arithmetic/alu-flags-circuit.svg',
-            localName: 'aluFlagsCircuit',
-            kind: 'default',
+            path: '@/animations/computer-organization/arithmetic/alu-flags-circuit',
+            localName: 'aluFlagsCircuitAnimation',
+            kind: 'named',
           },
         },
         {

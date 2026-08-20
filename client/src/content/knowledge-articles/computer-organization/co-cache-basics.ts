@@ -1,5 +1,5 @@
 import type { KnowledgeArticleData } from '@/content/knowledge-articles/types'
-import twoWayCache from '@/assets/computer-organization/cache/2way-set-associative-cache.svg'
+import { twoWaySetAssociativeCacheAnimation } from '@/animations/computer-organization/cache/two-way-set-associative-cache'
 
 export const coCacheBasicsArticle: KnowledgeArticleData = {
   pointId: 'co-cache-basics',
@@ -185,18 +185,12 @@ export const coCacheBasicsArticle: KnowledgeArticleData = {
         {
           id: 'kb-co-cache-mapping-11',
           type: 'paragraph',
-          text: '下面是一个**二路组相联**的 Cache 电路图：Cache 分成 2 组，需要 2 个与门和 2 个比较器。\n\n若是**全相联**，在这个例子里等价于 16 路组相联，每组比较 16 行，需要 16 个比较器，复杂度非常高。',
+          text: '下面是一个**二路组相联**的 Cache 电路图：每组包含 2 路，访问时需要 2 个与门和 2 个比较器并行判断。\n\n若是**全相联**，在这个例子里等价于 16 路组相联，每组比较 16 行，需要 16 个比较器，复杂度非常高。',
         },
         {
           id: 'kb-co-cache-mapping-10',
-          type: 'image',
-          src: twoWayCache,
-          alt: '二路组相联 Cache 电路图：tag 与 valid 比较、MUX 选择、组号与块内地址拆分',
-          sourceImport: {
-            path: '@/assets/computer-organization/cache/2way-set-associative-cache.svg',
-            localName: 'twoWayCache',
-            kind: 'default',
-          },
+          type: 'animation',
+          animation: twoWaySetAssociativeCacheAnimation,
         },
       ],
     },
