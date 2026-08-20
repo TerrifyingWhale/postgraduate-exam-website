@@ -577,7 +577,8 @@
       "explanation": "答案 B。785 < 2²⁴，float 精确表示，I 真；(int)f 截断小数，1567.8≠1567，II 假；float→double→float 无损，III 真；d+f中 f 被 d 吞掉，结果≈0，IV 假。故选 I、III。",
       "resourceLinks": [],
       "knowledgeBlockIds": [
-        "kb-co-conversion-2-2"
+        "kb-co-conversion-2-2",
+        "kb-co-float-4-2"
       ],
       "id": "exam-2010-14",
       "year": 2010

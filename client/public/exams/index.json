@@ -1207,7 +1207,8 @@
     "topic": "计算机组成原理",
     "stemText": "假定变量 `i`、`f` 和 `d` 的数据类型分别为 `int`、`float` 和 `double`（`int` 用补码表示，`float` 和 `double` 分别用 IEEE 754 单精度和双精度浮点数格式表示），已知 `i=785`，`f=1.5678e3`，`d=1.5e100`。若在 32 位机器中执行下列关系表达式，则结果为\"真\"的是( )。\n\nI. `i == (int)(float)i`\n\nII. `f == (float)(int)f`\n\nIII. `f == (float)(double)f`\n\nIV. `(d+f)-d == f`",
     "knowledgeBlockIds": [
-      "kb-co-conversion-2-2"
+      "kb-co-conversion-2-2",
+      "kb-co-float-4-2"
     ],
     "tags": [
       "计算机组成原理",
