@@ -22,4 +22,5 @@ export type Contributor = {
 
 export const contributors: Contributor[] = [
   { name: '11408考研良子', platform: 'bilibili', url: 'https://space.bilibili.com/385409016', },
+  { name: '恐惧之鲸', platform: 'github', url: 'https://github.com/TerrifyingWhale', },
 ]
