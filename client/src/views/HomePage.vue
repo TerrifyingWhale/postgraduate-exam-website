@@ -2,7 +2,7 @@
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { contributors as ALL_CONTRIBUTORS, type Contributor } from "@/content/contributors";
-import beta from "@/components/layout/beta.vue";
+import beta from "@/components/home-page/beta.vue";
 import { warmSearch } from "@/search/shared";
 
 onMounted(() => {
