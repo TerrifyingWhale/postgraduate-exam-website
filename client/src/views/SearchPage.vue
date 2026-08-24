@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useSearch } from '@/search/composables/useSearch'
 import type { SearchResult } from '@/search/types/index'
 import { highlightText } from '@/search/composables/useSearch'
+import { warmSearch } from '@/search/shared'
 import BrandLogo from '@/components/BrandLogo.vue'
 
 /** 输入字符上限：超过自动截断到前 20 字（含中文 / 英文 / 数字，按 UTF-16 code unit 计） */
@@ -37,9 +38,6 @@ const pagedResults = computed(() => {
   return merged.value.slice(start, start + PAGE_SIZE)
 })
 
-/** 最小 loading 显示时间：避免 spinner 一闪而过，让用户感受到"正在检索" */
-const MIN_LOADING_MS = 500
-
 async function run(q: string) {
   if (!q.trim()) {
     results.value = []
@@ -47,7 +45,6 @@ async function run(q: string) {
     return
   }
   loading.value = true
-  const t0 = Date.now()
   try {
     const outcome = await search(q)
     if (outcome) {
@@ -56,10 +53,6 @@ async function run(q: string) {
       page.value = 1
     }
   } finally {
-    const elapsed = Date.now() - t0
-    if (elapsed < MIN_LOADING_MS) {
-      await new Promise((r) => setTimeout(r, MIN_LOADING_MS - elapsed))
-    }
     loading.value = false
   }
 }
@@ -74,7 +67,6 @@ async function runLiveSearch() {
     return
   }
   loading.value = true
-  const t0 = Date.now()
   try {
     const outcome = await search()
     if (outcome) {
@@ -83,10 +75,6 @@ async function runLiveSearch() {
       page.value = 1
     }
   } finally {
-    const elapsed = Date.now() - t0
-    if (elapsed < MIN_LOADING_MS) {
-      await new Promise((r) => setTimeout(r, MIN_LOADING_MS - elapsed))
-    }
     loading.value = false
   }
 }
@@ -153,7 +141,7 @@ onBeforeUnmount(dispose)
           </RouterLink>
         </div>
 
-        <form class="search-form" @submit.prevent="onSubmit">
+        <form class="search-form" @pointerenter="warmSearch" @submit.prevent="onSubmit">
           <span class="search-icon">
             <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
               <circle cx="9" cy="9" r="6" />
@@ -167,6 +155,7 @@ onBeforeUnmount(dispose)
             placeholder="搜索知识点或章节"
             autocomplete="off"
             class="search-input"
+            @focus="warmSearch"
             @keydown="onKeydown"
           />
           <button

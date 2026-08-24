@@ -7,13 +7,8 @@
  *  - snippet 截取：以首个命中 token 为中心
  *  - 高亮：highlightText
  */
-import type {
-  ChapterSignatures,
-  InvertedIndex,
-  SearchCorpus,
-  SearchExamItem,
-  SearchKnowledgeDoc,
-} from '@/search/types'
+import MiniSearch from 'minisearch'
+import type { SearchCorpus, SearchExamItem, SearchKnowledgeSectionDoc } from '@/search/types'
 
 /* ========================================================================== *
  * 文本归一化
@@ -37,20 +32,12 @@ export const CJK_RE = /[\u3400-\u9FFF\u3040-\u30FF\uAC00-\uD7AF\uFF00-\uFFEF]+/g
 
 /** 运行时语料：真题与知识各自取需要的字段 */
 export type LoadedCorpus = {
-  /** 子点级知识文档（倒排索引单位），下标即 docIdx */
-  knowledgeDocs: SearchKnowledgeDoc[]
-  /** 倒排索引：词 -> [[docIdx, tier], ...]，tier 0=标题层，1=正文层 */
-  invertedK: InvertedIndex
-  /** 章节专属短语：chapterTitle -> 该章高频/专属词（用于查询领域归属） */
-  chapterSignatures: ChapterSignatures
+  /** 构建期预生成、运行时直接反序列化的 MiniSearch 索引 */
+  miniSearch: MiniSearch<SearchKnowledgeSectionDoc>
   /** 同义词查找表：word → 同组全部变体 */
   synonyms: Map<string, string[]>
   /** 真题 "年份-题号" -> exam，用于精确题号命中 */
   examYearNumberMap: Map<string, SearchExamItem>
-  /** 中文分词器（segmentit，懒加载；失败退化为 bigram） */
-  segment?: (input: string) => string[]
-  /** 408 专有名词集合：从 408-terms.txt 解析，命中这些词时评分加权重（×TERM408_WEIGHT） */
-  term408: Set<string>
 }
 
 /* ========================================================================== *
@@ -75,17 +62,20 @@ export function withBase(path: string): string {
 
 let corpusPromise: Promise<LoadedCorpus> | null = null
 let segmentPromise: Promise<((input: string) => string[]) | undefined> | null = null
+let dictPromise: Promise<string> | null = null
 
 /* ========================================================================== *
  * 语料加载（Promise 缓存 + segmentit 懒加载）
  * ========================================================================== */
 
-/**
- * 读取 408 领域专业词典（与 debug-search.ts / public/search 共用同一个 408-terms.txt 源文件）。
- *  - 浏览器：fetch(withBase('/search/408-terms.txt'))（适配 GitHub Pages 二级目录）
- *  - Node jiti：fetch(file:///...)，fallback 到 fs 读 src/search/408-terms.txt 源
- */
+/** 读取构建阶段同步到 public/search 的 408 领域专业词典。 */
 async function loadExam408Dict(): Promise<string> {
+  if (dictPromise) return dictPromise
+  dictPromise = loadExam408DictUncached()
+  return dictPromise
+}
+
+async function loadExam408DictUncached(): Promise<string> {
   const browserPath = withBase('/search/408-terms.txt')
   try {
     const res = await fetch(browserPath)
@@ -98,23 +88,35 @@ async function loadExam408Dict(): Promise<string> {
         .join('\n')
     }
   } catch {
-    /* 浏览器 fetch 失败（非 HTTP 环境，如 Node/jiti），继续尝试 Node fs 路径 */
-  }
-  // Node/jiti fallback：直接读源文件
-  try {
-    // 动态 import，浏览器端不需要这俩也不会执行到这里
-    const { readFileSync } = await import('node:fs') as typeof import('node:fs')
-    const { dirname, join } = await import('node:path') as typeof import('node:path')
-    const { fileURLToPath } = await import('node:url') as typeof import('node:url')
-    const here = dirname(fileURLToPath(import.meta.url))
-    const raw = readFileSync(join(here, '408-terms.txt'), 'utf8')
-    return raw
-      .split(/\r?\n/)
-      .map((l) => l.trim())
-      .filter((l) => l && !l.startsWith('#'))
-      .join('\n')
-  } catch {
     return ''
+  }
+  return ''
+}
+
+/** MiniSearch 构建期和查询期共用的 Segmentit 分词规范。 */
+export function createSearchTokenizer(segment?: (input: string) => string[]): (text: string) => string[] {
+  return (text: string) => {
+    const clean = normalizeIo(text).normalize('NFKC').toLowerCase()
+    const words = segment ? segment(clean) : clean.replace(/\p{P}/gu, ' ').split(/\s+/)
+    return words
+      .map((word) => String(word).trim())
+      .filter((word) => /[a-z0-9\u3400-\u9fff]/i.test(word))
+  }
+}
+
+function miniSearchOptions(segment?: (input: string) => string[]) {
+  return {
+    idField: 'sectionId',
+    fields: ['sectionTitle', 'pointTitles', 'subpointTitles', 'body'],
+    storeFields: [
+      'sectionId', 'bookId', 'bookTitle', 'chapterTitle', 'sectionTitle',
+      'pointTitles', 'subpointTitles', 'route', 'parts', 'allBlockIds', 'examCount',
+    ],
+    tokenize: createSearchTokenizer(segment),
+    processTerm: (term: string) => term,
+    extractField: (document: SearchKnowledgeSectionDoc, fieldName: string) => fieldName === 'body'
+      ? document.parts.flatMap((part) => part.blockTexts).join(' ')
+      : document[fieldName as keyof SearchKnowledgeSectionDoc],
   }
 }
 
@@ -169,26 +171,14 @@ function buildSynonymLookup(groups: string[][]): Map<string, string[]> {
   return lookup
 }
 
-/** 把 408-terms.txt 的每行 "词|POS|词频" 解析成词名集合（词的大小写归一用 lowerCase 后比对） */
-function parse408Terms(dictText: string): Set<string> {
-  const set = new Set<string>()
-  for (const raw of dictText.split(/\r?\n/)) {
-    const line = raw.trim()
-    if (!line || line.startsWith('#')) continue
-    const first = line.split('|')[0]?.trim()
-    if (first && first.length >= 2) set.add(first.toLowerCase())
-  }
-  return set
-}
-
-/** 加载搜索语料 JSON + 同义词 + 分词器，构建运行时索引结构（全局缓存） */
+/** 并行加载轻量元数据、同义词、分词器和预生成索引；全局只执行一次。 */
 export async function ensureCorpusLoaded(): Promise<LoadedCorpus> {
   if (corpusPromise) return corpusPromise
   corpusPromise = (async () => {
-    const [corpusJson, synonymsJson, dictText, segment]: [SearchCorpus, string[][], string, ((i: string) => string[]) | undefined] = await Promise.all([
+    const [corpusJson, miniSearchJson, synonymsJson, segment]: [SearchCorpus, string, string[][], ((i: string) => string[]) | undefined] = await Promise.all([
       fetch(withBase('/search/search-index.json')).then((r) => r.json()),
+      fetch(withBase('/search/minisearch-index.json')).then((r) => r.text()),
       fetch(withBase('/search/synonyms.json')).then((r) => r.json()),
-      loadExam408Dict(),
       loadSegmentit(),
     ])
 
@@ -198,16 +188,24 @@ export async function ensureCorpusLoaded(): Promise<LoadedCorpus> {
     }
 
     return {
-      knowledgeDocs: corpusJson.knowledgeDocs || [],
-      invertedK: corpusJson.invertedK || {},
-      chapterSignatures: corpusJson.chapterSignatures || {},
+      miniSearch: MiniSearch.loadJSON<SearchKnowledgeSectionDoc>(miniSearchJson, miniSearchOptions(segment)),
       synonyms: buildSynonymLookup(synonymsJson),
       examYearNumberMap,
-      segment,
-      term408: parse408Terms(dictText),
     }
   })()
-  return corpusPromise
+  try {
+    return await corpusPromise
+  } catch (error) {
+    corpusPromise = null
+    throw error
+  }
+}
+
+/** 页面空闲或搜索框获得焦点时预热；失败不影响页面，真正搜索时仍会重试加载。 */
+export function warmSearch(): void {
+  void ensureCorpusLoaded().catch(() => {
+    corpusPromise = null
+  })
 }
 
 /* ========================================================================== *

@@ -28,13 +28,9 @@ export type SearchKnowledgePoint = {
   allBlockIds: string[]
 }
 
-/**
- * 子点级可检索文档（倒排索引单位）。
- * 字段按匹配优先级分层：book/chapter/section/point/subpoint 标题属于"标题层"（tier0），
- * 正文 body 与完整路径 breadcrumb 属于"正文层"（tier1）。标题级命中的排最前。
- */
+/** 构建脚本提取的 subpoint 中间结构，最终会聚合为 SearchKnowledgeSectionDoc。 */
 export type SearchKnowledgeDoc = {
-  /** 作为倒排索引与 knowledgeDocs 数组下标的唯一索引 */
+  /** 构建期中间结构的唯一索引 */
   docIdx: number
   pointId: string
   sectionId: string
@@ -44,12 +40,6 @@ export type SearchKnowledgeDoc = {
   sectionTitle: string
   pointTitle: string
   subpointTitle: string
-  /**
-   * 子点正文纯文本（无 Markdown），由各 block 文本用空格拼接而成。
-   * 历史字段，新构建产物不再输出；运行时如需拼接正文，用 `blockTexts.join(' ')`。
-   * 保留为可选字段以兼容旧产物。
-   */
-  body?: string
   /** 各 block 的纯文本，与 blockIds 一一对应（用于反查 snippet 对应的具体 block） */
   blockTexts: string[]
   /** 当前 subpoint 自己的 block id 数组，与 blockTexts 一一对应 */
@@ -61,6 +51,30 @@ export type SearchKnowledgeDoc = {
   route: string
   blockId: string
   /** 整个 point 下所有 subpoint 的 block id 聚合（"看相关真题"用） */
+  allBlockIds: string[]
+  examCount: number
+}
+
+export type SearchKnowledgeSectionPart = {
+  pointTitle: string
+  subpointTitle: string
+  subpointId: string
+  blockId: string
+  blockTexts: string[]
+  blockIds: string[]
+}
+
+/** MiniSearch 的实际索引单位：一个 section 聚合成一篇文档。 */
+export type SearchKnowledgeSectionDoc = {
+  sectionId: string
+  bookId: string
+  bookTitle: string
+  chapterTitle: string
+  sectionTitle: string
+  pointTitles: string
+  subpointTitles: string
+  route: string
+  parts: SearchKnowledgeSectionPart[]
   allBlockIds: string[]
   examCount: number
 }
@@ -86,20 +100,10 @@ export type SearchExamItem = {
   route: string
 }
 
-/** 倒排索引：词 -> [[docIdx, 最低tier], ...]，tier0=标题层，tier1=正文层 */
-export type InvertedIndex = Record<string, Array<[number, number]>>
-
-/** 章节专属短语：chapterTitle -> 该章高频/专属词（用于查询领域归属判断） */
-export type ChapterSignatures = Record<string, string[]>
-
 /** 构建时输出的搜索语料 JSON */
 export type SearchCorpus = {
   version: number
   generatedAt: string
-  knowledge: SearchKnowledgePoint[]
-  knowledgeDocs: SearchKnowledgeDoc[]
-  invertedK: InvertedIndex
-  chapterSignatures?: ChapterSignatures
   exams: SearchExamItem[]
 }
 

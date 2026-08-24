@@ -10,6 +10,7 @@ import KnowledgeArticle from '@/components/knowledge/KnowledgeArticle.vue'
 import KnowledgeToc from '@/components/knowledge/KnowledgeToc.vue'
 import DoubleChevronIcon from '@/components/icons/DoubleChevronIcon.vue'
 import BrandLogo from '@/components/BrandLogo.vue'
+import { warmSearch } from '@/search/shared'
 
 type SectionArticleEntry = {
   point: KnowledgePoint
@@ -510,7 +511,7 @@ onBeforeUnmount(() => {
             </svg>
           </button>
         </div>
-        <div ref="searchBoxRef" class="relative mb-5 block" @focusout="onSearchFocusout">
+        <div ref="searchBoxRef" class="relative mb-5 block" @focusout="onSearchFocusout" @pointerenter="warmSearch">
           <span class="sr-only">搜索知识目录</span>
           <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>
           <input
@@ -520,7 +521,7 @@ onBeforeUnmount(() => {
             placeholder="搜索知识点（回车前往搜索页）"
             autocomplete="off"
             spellcheck="false"
-            @focus="searchFocused = true"
+            @focus="searchFocused = true; warmSearch()"
             @input="highlightIndex = -1"
             @keydown="onSearchKeydown"
           />

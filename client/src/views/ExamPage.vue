@@ -8,6 +8,7 @@ import type { Exam, ExamFilterBookChapter, ExamFilterBookChapterSection, ExamFil
 import ExamPaperItem from '@/components/exams/ExamPaperItem.vue'
 import BrandLogo from '@/components/BrandLogo.vue'
 import DoubleChevronIcon from '@/components/icons/DoubleChevronIcon.vue'
+import { warmSearch } from '@/search/shared'
 
 const route = useRoute()
 const router = useRouter()
@@ -339,7 +340,7 @@ onBeforeUnmount(() => {
             <svg class="h-4 w-4 transition-transform" :class="drawerPinned ? '-rotate-45' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 17v5M7 3h10M8 3l1 7-3 4h12l-3-4 1-7" stroke-linecap="square" stroke-linejoin="miter" /></svg>
           </button>
         </div>
-        <label class="relative block">
+        <label class="relative block" @pointerenter="warmSearch">
           <span class="sr-only">搜索真题</span>
           <Search class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input
@@ -349,6 +350,7 @@ onBeforeUnmount(() => {
             autocomplete="off"
             spellcheck="false"
             type="search"
+            @focus="warmSearch"
             @keydown="onExamSearchKeydown"
           />
         </label>

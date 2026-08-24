@@ -3,6 +3,27 @@ import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { contributors as ALL_CONTRIBUTORS, type Contributor } from "@/content/contributors";
 import beta from "@/components/layout/beta.vue";
+import { warmSearch } from "@/search/shared";
+
+type IdleWindow = Window & {
+  requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
+  cancelIdleCallback?: (handle: number) => void;
+};
+
+let searchWarmupHandle: number | undefined;
+onMounted(() => {
+  const idleWindow = window as IdleWindow;
+  searchWarmupHandle = idleWindow.requestIdleCallback
+    ? idleWindow.requestIdleCallback(warmSearch, { timeout: 2200 })
+    : window.setTimeout(warmSearch, 1200);
+});
+
+onBeforeUnmount(() => {
+  if (searchWarmupHandle === undefined) return;
+  const idleWindow = window as IdleWindow;
+  if (idleWindow.cancelIdleCallback) idleWindow.cancelIdleCallback(searchWarmupHandle);
+  else window.clearTimeout(searchWarmupHandle);
+});
 
 const router = useRouter();
 const query = ref("");
@@ -242,6 +263,7 @@ const contributorsRow2 = fillRow(row2Raw);
 
       <form
         class="h-[78px] mt-[38px] mx-auto w-full max-w-[920px] border border-[#dbe4ef] rounded-[28px] flex items-center px-[14px] pl-7 bg-white/94 shadow-[0_18px_45px_rgba(52,87,150,0.1)]"
+        @pointerenter="warmSearch"
         @submit.prevent="submit"
       >
         <input
@@ -251,6 +273,7 @@ const contributorsRow2 = fillRow(row2Raw);
           placeholder="搜索知识点或章节（如 CPU 流水线 / GBN / 中断隐指令）"
           autocomplete="off"
           class="flex-1 border-0 outline-0 bg-transparent text-xl text-[#0b1f45] placeholder:text-[#9aa9c3]"
+          @focus="warmSearch"
           @keydown="onSearchKeydown"
         />
         <button
