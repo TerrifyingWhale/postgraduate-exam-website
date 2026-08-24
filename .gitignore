@@ -12,6 +12,7 @@ out/
 # 搜索索引（由 scripts/build-search-index.cjs 自动生成，勿跟踪）
 client/public/search/search-index.json
 client/public/search/minisearch-index.json
+client/public/search/minisearch-fragment-index.json
 
 # 环境变量
 .env

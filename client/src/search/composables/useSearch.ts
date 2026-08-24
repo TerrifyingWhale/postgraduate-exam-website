@@ -7,7 +7,7 @@
  *  - dispose：卸载时清理防抖定时器
  *  内部用 searchSeq 序列号丢弃过期结果，保证快速输入时只展示最新一次。
  *
- * 数据来源：构建期预生成的 /search/minisearch-index.json + /search/search-index.json。
+ * 数据来源：构建期预生成的 Section/片段 MiniSearch 索引 + /search/search-index.json。
  *           + /search/synonyms.json（同义词组）。
  * 检索策略：知识走 MiniSearch BM25 排序 + section 聚合 + 同义词扩展 + Segmentit 分词；
  *           真题仅支持"年份+题号"精确命中（如 2019 01）。

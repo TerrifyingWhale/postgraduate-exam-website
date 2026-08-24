@@ -8,7 +8,12 @@
  *  - 高亮：highlightText
  */
 import MiniSearch from 'minisearch'
-import type { SearchCorpus, SearchExamItem, SearchKnowledgeSectionDoc } from '@/search/types'
+import type {
+  SearchCorpus,
+  SearchExamItem,
+  SearchKnowledgeFragmentDoc,
+  SearchKnowledgeSectionDoc,
+} from '@/search/types'
 
 /* ========================================================================== *
  * 文本归一化
@@ -32,8 +37,10 @@ export const CJK_RE = /[\u3400-\u9FFF\u3040-\u30FF\uAC00-\uD7AF\uFF00-\uFFEF]+/g
 
 /** 运行时语料：真题与知识各自取需要的字段 */
 export type LoadedCorpus = {
-  /** 构建期预生成、运行时直接反序列化的 MiniSearch 索引 */
-  miniSearch: MiniSearch<SearchKnowledgeSectionDoc>
+  /** 决定 Section 结果顺序的主索引。 */
+  sectionIndex: MiniSearch<SearchKnowledgeSectionDoc>
+  /** 决定每个 Section 展示和定位到哪个内部片段的轻量索引。 */
+  fragmentIndex: MiniSearch<SearchKnowledgeFragmentDoc>
   /** 同义词查找表：word → 同组全部变体 */
   synonyms: Map<string, string[]>
   /** 真题 "年份-题号" -> exam，用于精确题号命中 */
@@ -104,7 +111,7 @@ export function createSearchTokenizer(segment?: (input: string) => string[]): (t
   }
 }
 
-function miniSearchOptions(segment?: (input: string) => string[]) {
+function sectionIndexOptions(segment?: (input: string) => string[]) {
   return {
     idField: 'sectionId',
     fields: ['sectionTitle', 'pointTitles', 'subpointTitles', 'body'],
@@ -117,6 +124,16 @@ function miniSearchOptions(segment?: (input: string) => string[]) {
     extractField: (document: SearchKnowledgeSectionDoc, fieldName: string) => fieldName === 'body'
       ? document.parts.flatMap((part) => part.blockTexts).join(' ')
       : document[fieldName as keyof SearchKnowledgeSectionDoc],
+  }
+}
+
+function fragmentIndexOptions(segment?: (input: string) => string[]) {
+  return {
+    idField: 'fragmentId',
+    fields: ['title', 'text'],
+    storeFields: ['fragmentId', 'sectionId', 'kind', 'partIndex', 'blockIndex'],
+    tokenize: createSearchTokenizer(segment),
+    processTerm: (term: string) => term,
   }
 }
 
@@ -175,9 +192,10 @@ function buildSynonymLookup(groups: string[][]): Map<string, string[]> {
 export async function ensureCorpusLoaded(): Promise<LoadedCorpus> {
   if (corpusPromise) return corpusPromise
   corpusPromise = (async () => {
-    const [corpusJson, miniSearchJson, synonymsJson, segment]: [SearchCorpus, string, string[][], ((i: string) => string[]) | undefined] = await Promise.all([
+    const [corpusJson, sectionIndexJson, fragmentIndexJson, synonymsJson, segment]: [SearchCorpus, string, string, string[][], ((i: string) => string[]) | undefined] = await Promise.all([
       fetch(withBase('/search/search-index.json')).then((r) => r.json()),
       fetch(withBase('/search/minisearch-index.json')).then((r) => r.text()),
+      fetch(withBase('/search/minisearch-fragment-index.json')).then((r) => r.text()),
       fetch(withBase('/search/synonyms.json')).then((r) => r.json()),
       loadSegmentit(),
     ])
@@ -188,7 +206,8 @@ export async function ensureCorpusLoaded(): Promise<LoadedCorpus> {
     }
 
     return {
-      miniSearch: MiniSearch.loadJSON<SearchKnowledgeSectionDoc>(miniSearchJson, miniSearchOptions(segment)),
+      sectionIndex: MiniSearch.loadJSON<SearchKnowledgeSectionDoc>(sectionIndexJson, sectionIndexOptions(segment)),
+      fragmentIndex: MiniSearch.loadJSON<SearchKnowledgeFragmentDoc>(fragmentIndexJson, fragmentIndexOptions(segment)),
       synonyms: buildSynonymLookup(synonymsJson),
       examYearNumberMap,
     }

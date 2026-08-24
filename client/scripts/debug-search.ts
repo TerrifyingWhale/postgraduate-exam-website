@@ -8,7 +8,12 @@ import { fileURLToPath } from 'node:url'
 import MiniSearch from 'minisearch'
 import { Segment, useDefault } from 'segmentit'
 import type { LoadedCorpus } from '../src/search/shared'
-import type { SearchCorpus, SearchExamItem, SearchKnowledgeSectionDoc } from '../src/search/types'
+import type {
+  SearchCorpus,
+  SearchExamItem,
+  SearchKnowledgeFragmentDoc,
+  SearchKnowledgeSectionDoc,
+} from '../src/search/types'
 import { searchKnowledge } from '../src/search/composables/searchKnowledge'
 import { searchExam } from '../src/search/composables/searchExam'
 
@@ -29,9 +34,10 @@ function normalizeIo(text: string): string {
 }
 
 async function loadCorpus(): Promise<LoadedCorpus> {
-  const [corpusRaw, miniSearchRaw, synonymsRaw, dictRaw] = await Promise.all([
+  const [corpusRaw, sectionIndexRaw, fragmentIndexRaw, synonymsRaw, dictRaw] = await Promise.all([
     readFile(join(clientRoot, 'public/search/search-index.json'), 'utf8'),
     readFile(join(clientRoot, 'public/search/minisearch-index.json'), 'utf8'),
+    readFile(join(clientRoot, 'public/search/minisearch-fragment-index.json'), 'utf8'),
     readFile(join(clientRoot, 'public/search/synonyms.json'), 'utf8'),
     readFile(join(clientRoot, 'src/search/408-terms.txt'), 'utf8'),
   ])
@@ -42,7 +48,7 @@ async function loadCorpus(): Promise<LoadedCorpus> {
     normalizeIo(text).normalize('NFKC').toLowerCase(),
     { simple: true },
   ).map((word) => String(word).trim()).filter((word) => /[a-z0-9\u3400-\u9fff]/i.test(word))
-  const miniSearch = MiniSearch.loadJSON<SearchKnowledgeSectionDoc>(miniSearchRaw, {
+  const sectionIndex = MiniSearch.loadJSON<SearchKnowledgeSectionDoc>(sectionIndexRaw, {
     idField: 'sectionId',
     fields: ['sectionTitle', 'pointTitles', 'subpointTitles', 'body'],
     storeFields: [
@@ -55,10 +61,18 @@ async function loadCorpus(): Promise<LoadedCorpus> {
       ? document.parts.flatMap((part) => part.blockTexts).join(' ')
       : document[fieldName as keyof SearchKnowledgeSectionDoc],
   })
+  const fragmentIndex = MiniSearch.loadJSON<SearchKnowledgeFragmentDoc>(fragmentIndexRaw, {
+    idField: 'fragmentId',
+    fields: ['title', 'text'],
+    storeFields: ['fragmentId', 'sectionId', 'kind', 'partIndex', 'blockIndex'],
+    tokenize,
+    processTerm: (term) => term,
+  })
   const examYearNumberMap = new Map<string, SearchExamItem>()
   corpus.exams.forEach((exam) => examYearNumberMap.set(`${exam.year}-${exam.number}`, exam))
   return {
-    miniSearch,
+    sectionIndex,
+    fragmentIndex,
     synonyms: buildSynonymLookup(JSON.parse(synonymsRaw) as string[][]),
     examYearNumberMap,
   }

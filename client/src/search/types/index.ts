@@ -56,6 +56,7 @@ export type SearchKnowledgeDoc = {
 }
 
 export type SearchKnowledgeSectionPart = {
+  pointId: string
   pointTitle: string
   subpointTitle: string
   subpointId: string
@@ -77,6 +78,21 @@ export type SearchKnowledgeSectionDoc = {
   parts: SearchKnowledgeSectionPart[]
   allBlockIds: string[]
   examCount: number
+}
+
+/** Section 内部的可定位片段；由独立 MiniSearch 索引选出当前 Section 的最佳命中位置。 */
+export type SearchKnowledgeFragmentDoc = {
+  fragmentId: string
+  sectionId: string
+  kind: 'point' | 'subpoint' | 'block'
+  /** 对应 SearchKnowledgeSectionDoc.parts 的位置。 */
+  partIndex: number
+  /** kind=block 时对应 part.blockTexts 的位置，否则为 -1。 */
+  blockIndex: number
+  /** 仅参与建索引，不序列化进搜索结果。 */
+  title: string
+  /** 仅参与建索引，不序列化进搜索结果。 */
+  text: string
 }
 
 export type SearchExamItem = {
@@ -149,7 +165,7 @@ export type SearchResult = {
   subpointId?: string
   /** 正文命中时精确到具体 block 的 id（用户看到的 snippet 对应的 block） */
   matchedBlockId?: string
-  /** 用于高亮的查询串：原始查询 + 同义词展开后的变体（如 "IO方式 IO I/O 输入输出"） */
+  /** 用于高亮的原始用户查询；同义词只参与召回，不扩大高亮范围。 */
   highlightQuery?: string
   /** 各级标题（供路径分段渲染与精确高亮） */
   bookTitle?: string

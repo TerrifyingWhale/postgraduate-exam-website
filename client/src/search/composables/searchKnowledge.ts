@@ -5,8 +5,8 @@
 import type { SearchResult as MiniSearchResult } from "minisearch";
 import type {
   KnowledgeMatchField,
+  SearchKnowledgeFragmentDoc,
   SearchKnowledgeSectionDoc,
-  SearchKnowledgeSectionPart,
   SearchResult,
 } from "@/search/types";
 import type { LoadedCorpus } from "@/search/shared";
@@ -42,62 +42,26 @@ export function expandWithSynonyms(
 }
 
 type KnowledgeHit = MiniSearchResult & SearchKnowledgeSectionDoc;
+type FragmentHit = MiniSearchResult & SearchKnowledgeFragmentDoc;
 
-type SnippetSource = {
-  text: string;
-  blockId?: string;
-  part?: SearchKnowledgeSectionPart;
-};
+function findBestFragments(
+  expandedQuery: string,
+  sectionIds: Set<string>,
+  loaded: LoadedCorpus,
+): Map<string, FragmentHit> {
+  const bestBySection = new Map<string, FragmentHit>();
+  const fragments = loaded.fragmentIndex.search(expandedQuery, {
+    combineWith: "OR",
+    boost: { title: 2, text: 1 },
+  }) as FragmentHit[];
 
-function includesAny(text: string, needles: string[]): boolean {
-  const normalized = normalizeIo(text).toLowerCase();
-  return needles.some((needle) => normalized.includes(needle));
-}
-
-function locateSnippet(hit: KnowledgeHit, query: string): SnippetSource {
-  const matchedFields = new Set(Object.values(hit.match || {}).flat());
-  const needles = [query, ...hit.terms]
-    .map((term) => normalizeIo(term).toLowerCase().trim())
-    .filter(Boolean);
-
-  if (matchedFields.has("sectionTitle")) return { text: hit.sectionTitle };
-
-  if (matchedFields.has("pointTitles")) {
-    const part = hit.parts.find((item) =>
-      includesAny(item.pointTitle, needles),
-    );
-    if (part) return { text: part.pointTitle, blockId: part.blockId, part };
+  // MiniSearch 已按相关性排序；每个 Section 第一次出现的片段就是其内部最高分结果。
+  for (const fragment of fragments) {
+    if (!sectionIds.has(fragment.sectionId) || bestBySection.has(fragment.sectionId)) continue;
+    bestBySection.set(fragment.sectionId, fragment);
+    if (bestBySection.size === sectionIds.size) break;
   }
-
-  if (matchedFields.has("subpointTitles")) {
-    const part = hit.parts.find((item) =>
-      includesAny(item.subpointTitle, needles),
-    );
-    if (part) return { text: part.subpointTitle, blockId: part.blockId, part };
-  }
-
-  for (const part of hit.parts) {
-    const blockIndex = part.blockTexts.findIndex((text) =>
-      includesAny(text, needles),
-    );
-    if (blockIndex >= 0) {
-      return {
-        text: part.blockTexts[blockIndex],
-        blockId: part.blockIds[blockIndex] || part.blockId,
-        part,
-      };
-    }
-  }
-
-  const fallbackPart = hit.parts[0];
-  return {
-    text:
-      fallbackPart?.blockTexts[0] ||
-      fallbackPart?.subpointTitle ||
-      hit.sectionTitle,
-    blockId: fallbackPart?.blockIds[0] || fallbackPart?.blockId,
-    part: fallbackPart,
-  };
+  return bestBySection;
 }
 
 export function searchKnowledge(
@@ -106,7 +70,7 @@ export function searchKnowledge(
   topK: number,
 ): SearchResult[] {
   const expandedQuery = expandWithSynonyms(query, loaded.synonyms);
-  const hits = loaded.miniSearch.search(expandedQuery, {
+  const hits = loaded.sectionIndex.search(expandedQuery, {
     combineWith: "OR",
     boost: {
       sectionTitle: 3,
@@ -116,30 +80,62 @@ export function searchKnowledge(
     },
   }) as KnowledgeHit[];
 
-  return hits.slice(0, topK).map((hit) => {
-    const snippet = locateSnippet(hit, query);
+  const topHits = hits.slice(0, topK);
+  const bestFragments = findBestFragments(
+    expandedQuery,
+    new Set(topHits.map((hit) => hit.sectionId)),
+    loaded,
+  );
+
+  return topHits.map((hit) => {
+    const fragment = bestFragments.get(hit.sectionId);
+    const matchedPart = fragment ? hit.parts[fragment.partIndex] : undefined;
+    const fallbackPart = matchedPart || hit.parts[0];
+    const snippetText = fragment?.kind === "point"
+      ? matchedPart?.pointTitle
+      : fragment?.kind === "subpoint"
+        ? matchedPart?.subpointTitle
+        : fragment?.kind === "block"
+          ? matchedPart?.blockTexts[fragment.blockIndex]
+          : hit.sectionTitle;
+    const blockId = fragment?.kind === "block"
+      ? matchedPart?.blockIds[fragment.blockIndex] || matchedPart?.blockId
+      : matchedPart?.blockId || fallbackPart?.blockId;
+    const anchor = fragment?.kind === "point" && matchedPart?.pointId
+      ? `article-${matchedPart.pointId}`
+      : fragment?.kind === "subpoint"
+        ? matchedPart?.subpointId
+        : blockId;
+    const matchField: KnowledgeMatchField = fragment?.kind === "point"
+      ? "point"
+      : fragment?.kind === "subpoint"
+        ? "subpoint"
+        : fragment?.kind === "block"
+          ? "body"
+          : "section";
     return {
       type: "knowledge" as const,
       title: hit.sectionTitle,
       subtitle: [hit.bookTitle, hit.chapterTitle, hit.sectionTitle]
         .filter(Boolean)
         .join(" › "),
-      snippet: extractSnippet(snippet.text, query),
-      route: hit.route,
-      blockId: snippet.blockId,
+      snippet: extractSnippet(snippetText || hit.sectionTitle, query),
+      route: anchor ? `${hit.route}#${anchor}` : hit.route,
+      blockId,
       blockIds: hit.allBlockIds,
       examCount: hit.examCount,
-      matchField: "section" as KnowledgeMatchField,
+      matchField,
+      pointId: matchedPart?.pointId,
       sectionId: hit.sectionId,
-      subpointId: snippet.part?.subpointId,
-      matchedBlockId: snippet.blockId,
+      subpointId: matchedPart?.subpointId,
+      matchedBlockId: blockId,
       bookTitle: hit.bookTitle,
       chapterTitle: hit.chapterTitle,
       sectionTitle: hit.sectionTitle,
-      pointTitle: snippet.part?.pointTitle,
-      subpointTitle: snippet.part?.subpointTitle,
+      pointTitle: matchedPart?.pointTitle,
+      subpointTitle: matchedPart?.subpointTitle,
       score: hit.score,
-      highlightQuery: expandedQuery,
+      highlightQuery: query,
     };
   });
 }

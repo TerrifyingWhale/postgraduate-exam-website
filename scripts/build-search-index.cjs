@@ -393,6 +393,7 @@ for (const doc of knowledgeDocs) {
   if (doc.subpointTitle) sectionDoc.subpointTitleSet.add(doc.subpointTitle);
   doc.allBlockIds.forEach((blockId) => sectionDoc.allBlockIdSet.add(blockId));
   sectionDoc.parts.push({
+    pointId: doc.pointId,
     pointTitle: doc.pointTitle,
     subpointTitle: doc.subpointTitle,
     subpointId: doc.subpointId,
@@ -418,6 +419,49 @@ const sectionDocs = Array.from(sectionDocMap.values()).map((doc) => {
     examCount: countExamsForBlocks(allBlockIds),
   };
 });
+
+/* ========== 6.6 构建 Section 内部片段索引文档 ========== */
+const fragmentDocs = [];
+for (const section of sectionDocs) {
+  const seenPointFragments = new Set();
+  section.parts.forEach((part, partIndex) => {
+    if (!seenPointFragments.has(part.pointId)) {
+      seenPointFragments.add(part.pointId);
+      fragmentDocs.push({
+        fragmentId: `point:${section.sectionId}:${part.pointId}`,
+        sectionId: section.sectionId,
+        kind: "point",
+        partIndex,
+        blockIndex: -1,
+        title: part.pointTitle,
+        text: "",
+      });
+    }
+
+    fragmentDocs.push({
+      fragmentId: `subpoint:${section.sectionId}:${part.pointId}:${part.subpointId}`,
+      sectionId: section.sectionId,
+      kind: "subpoint",
+      partIndex,
+      blockIndex: -1,
+      title: part.subpointTitle,
+      text: "",
+    });
+
+    part.blockTexts.forEach((text, blockIndex) => {
+      if (!text) return;
+      fragmentDocs.push({
+        fragmentId: `block:${section.sectionId}:${part.pointId}:${part.subpointId}:${blockIndex}`,
+        sectionId: section.sectionId,
+        kind: "block",
+        partIndex,
+        blockIndex,
+        title: "",
+        text,
+      });
+    });
+  });
+}
 
 /* ========== 7. 输出 ========== */
 const OUT_DIR = path.join(CLIENT_ROOT, "public", "search");
@@ -449,6 +493,15 @@ const miniSearch = new MiniSearch({
 });
 miniSearch.addAll(sectionDocs);
 
+const fragmentMiniSearch = new MiniSearch({
+  idField: "fragmentId",
+  fields: ["title", "text"],
+  storeFields: ["fragmentId", "sectionId", "kind", "partIndex", "blockIndex"],
+  tokenize: tokenizeText,
+  processTerm: (term) => term,
+});
+fragmentMiniSearch.addAll(fragmentDocs);
+
 const output = {
   version: 5,
   generatedAt: new Date().toISOString(),
@@ -464,16 +517,27 @@ writeFileSync(
   JSON.stringify(miniSearch),
   "utf-8",
 );
+writeFileSync(
+  path.join(OUT_DIR, "minisearch-fragment-index.json"),
+  JSON.stringify(fragmentMiniSearch),
+  "utf-8",
+);
 
 const subTotal = knowledgePoints.reduce((n, k) => n + k.subpoints.length, 0);
 const corpusBytes = Buffer.byteLength(JSON.stringify(output), "utf-8");
 const indexBytes = Buffer.byteLength(JSON.stringify(miniSearch), "utf-8");
+const fragmentIndexBytes = Buffer.byteLength(
+  JSON.stringify(fragmentMiniSearch),
+  "utf-8",
+);
 console.log("✓ 搜索语料生成完成");
 console.log(
   `  - 知识: ${knowledgePoints.length} points, ${subTotal} subpoints / ${sectionDocs.length} sections`,
 );
 console.log(`  - 真题: ${examItems.length} questions`);
-console.log(`  - MiniSearch 词条: ${miniSearch.termCount}`);
 console.log(
-  `  - 输出大小: corpus ${(corpusBytes / 1024).toFixed(0)} KB + index ${(indexBytes / 1024).toFixed(0)} KB`,
+  `  - MiniSearch: ${miniSearch.termCount} 个 Section 词条；${fragmentDocs.length} 个片段 / ${fragmentMiniSearch.termCount} 个片段词条`,
+);
+console.log(
+  `  - 输出大小: corpus ${(corpusBytes / 1024).toFixed(0)} KB + section index ${(indexBytes / 1024).toFixed(0)} KB + fragment index ${(fragmentIndexBytes / 1024).toFixed(0)} KB`,
 );
