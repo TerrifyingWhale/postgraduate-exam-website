@@ -561,20 +561,20 @@ onBeforeUnmount(() => {
         <div ref="bookMenuRef" class="relative min-w-0" @focusout="onBookMenuFocusout">
           <button
             type="button"
-            class="flex w-full cursor-pointer items-center gap-1 border-0 bg-transparent py-0 pl-0 pr-7 text-left text-[20px] font-semibold tracking-[-.03em] text-[#071225] outline-none"
+            class="flex w-full justify-between cursor-pointer items-center gap-1 border-0 bg-transparent py-0 pl-0 pr-0 text-left text-[20px] font-semibold tracking-[-.03em] text-[#071225] outline-none"
             aria-haspopup="listbox"
             :aria-expanded="bookMenuOpen"
             @click="toggleBookMenu"
           >
             <span class="min-w-0 flex-1 truncate">{{ currentBookTitle }}</span>
             <span
-              class="pointer-events-none absolute right-1 top-1/2 -translate-y-1/2 text-xs text-slate-400 transition-transform duration-200"
-              :class="bookMenuOpen ? 'rotate-180' : ''"
+              class="pointer-events-none text-xs text-slate-400 transition-transform duration-200"
+              :class="bookMenuOpen ? 'hidden' : ''"
               aria-hidden="true"
             >⌄</span>
           </button>
           <div class="book-menu" :class="bookMenuOpen ? 'is-open' : ''" role="listbox" aria-label="选择教材">
-            <ul class="book-menu-inner m-0 list-none">
+            <ul class="book-menu-inner m-0 list-none" :class="bookMenuOpen ? 'is-open' : ''" >
               <li v-for="item in books" :key="item.id" role="option" :aria-selected="item.id === bookId">
                 <button
                   type="button"
@@ -690,6 +690,15 @@ onBeforeUnmount(() => {
 }
 
 .book-menu-inner {
+  min-height: 0;
+  overflow: hidden;
+  margin-top: 0px;
+  padding: 0px;
+  border: 0px solid #d8e0eb;
+  background: #fff;
+}
+
+.book-menu-inner.is-open {
   min-height: 0;
   overflow: hidden;
   margin-top: 6px;
