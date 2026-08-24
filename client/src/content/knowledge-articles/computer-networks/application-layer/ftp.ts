@@ -23,7 +23,7 @@ export const ftpArticle: KnowledgeArticleData = {
     },
     {
       id: 'ftp-modes',
-      title: '主动模式与被动模式',
+      title: 'FTP的主动模式与被动模式',
       blocks: [
         {
           id: 'kb-ftp-modes-1',

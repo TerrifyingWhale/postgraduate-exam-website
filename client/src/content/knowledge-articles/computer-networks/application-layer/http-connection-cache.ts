@@ -75,7 +75,7 @@ export const httpConnectionCacheArticle: KnowledgeArticleData = {
     },
     {
       id: 'http-connections',
-      title: '非持续连接与持续连接',
+      title: 'http的非持续连接与持续连接',
       blocks: [
         {
           id: 'kb-http-connections-1',

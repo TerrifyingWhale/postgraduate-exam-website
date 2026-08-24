@@ -28,7 +28,7 @@ export const dnsQueryArticle: KnowledgeArticleData = {
     },
     {
       id: 'dns-recursive-iterative',
-      title: '递归查询与迭代查询',
+      title: 'DNS的递归查询与迭代查询',
       blocks: [
         {
           id: 'kb-dns-recursive-iterative-1',
