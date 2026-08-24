@@ -5,24 +5,9 @@ import { contributors as ALL_CONTRIBUTORS, type Contributor } from "@/content/co
 import beta from "@/components/layout/beta.vue";
 import { warmSearch } from "@/search/shared";
 
-type IdleWindow = Window & {
-  requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
-  cancelIdleCallback?: (handle: number) => void;
-};
-
-let searchWarmupHandle: number | undefined;
 onMounted(() => {
-  const idleWindow = window as IdleWindow;
-  searchWarmupHandle = idleWindow.requestIdleCallback
-    ? idleWindow.requestIdleCallback(warmSearch, { timeout: 2200 })
-    : window.setTimeout(warmSearch, 1200);
-});
-
-onBeforeUnmount(() => {
-  if (searchWarmupHandle === undefined) return;
-  const idleWindow = window as IdleWindow;
-  if (idleWindow.cancelIdleCallback) idleWindow.cancelIdleCallback(searchWarmupHandle);
-  else window.clearTimeout(searchWarmupHandle);
+  // 首页首屏挂载完成后立刻在后台加载搜索索引；不等待用户悬停或输入。
+  warmSearch();
 });
 
 const router = useRouter();
