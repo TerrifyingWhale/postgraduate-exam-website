@@ -129,7 +129,7 @@ Book
 ## 硬约束（勿违反）
 
 - **路由模式**：必须是 `createWebHashHistory()`（GitHub Pages 二级目录下 history 模式刷新会 404）。
-- **Vite 必须生成 sourcemap**：`build.sourcemap: true`，`vueDevtools` 插件已移除（防止 sourcemap 重复）。
+- **Vite 必须生成 sourcemap**：`build.sourcemap: true`。`vite-plugin-vue-devtools` 已恢复，仅在 dev 模式生效（`apply: 'serve'` 默认），不参与 build，不影响 sourcemap。
 - **Vite `base`**：默认 `/`（本机 dev 直接打开 `http://localhost:5173/`）；GitHub Pages 二级目录部署时由 deploy.yml 传 `VITE_BASE_PATH=/postgraduate-exam-website/`；自定义域名时改为 `VITE_BASE_PATH=/` 自行传即可。`index.html` 里所有 `public/` 下的静态资源（favicon、manifest 等）引用必须用 Vite 的 `%BASE_URL%` 占位符，不能写死绝对路径。
 - **`launch.json`** 使用简化 `sourceMapPathOverrides`，只保留 `"vite:///src/*": "${workspaceFolder}/client/src/*"`。
 - **搜索输入**：最多 20 字符；搜索结果 `topK = 8`。

@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
+import VueDevTools from 'vite-plugin-vue-devtools'
 import { fileURLToPath, URL } from 'node:url'
 import { copyFileSync, mkdirSync, writeFileSync, existsSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
@@ -10,7 +11,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 /**
  * GitHub Pages 部署约束（项目仓库二级目录）：
  *   - base: '/postgraduate-exam-website/' — 让产物里所有静态资源引用带上二级路径前缀
- *   - sourcemap: true — AGENTS.md 硬约束（且 vueDevTools 已移除，防止 sourcemap 重复）
+ *   - sourcemap: true — AGENTS.md 硬约束
+ *   - vueDevTools() 只在 dev 模式生效（apply: 'serve' 默认），不参与 build，不影响 sourcemap
  *   - build 后自动写入 .nojekyll / 404.html 以及 Pages 合规的 SPA 404 重定向文件
  *   - 构建期同步 src/search/408-terms.txt → dist/search/408-terms.txt（保证唯一数据源）
  */
@@ -22,6 +24,7 @@ export default defineConfig({
   base: process.env.VITE_BASE_PATH ?? '/',
   plugins: [
     vue(),
+    VueDevTools(),
     tailwindcss(),
     {
       name: 'github-pages-deploy-files',
