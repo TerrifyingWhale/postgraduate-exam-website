@@ -78,8 +78,11 @@ export function useSearch(options?: {
       debounceTimer = null;
     }
 
-    // 1 字符查询太宽泛，直接返回空减少噪声
-    if (!q || Array.from(q).length <= 1) return EMPTY_OUTCOME;
+    // 允许“树”“栈”等单个中文字符搜索；仍拦截过于宽泛的单个字母或数字。
+    const characters = Array.from(q);
+    if (!q || (characters.length === 1 && /^[a-z0-9]$/i.test(q))) {
+      return EMPTY_OUTCOME;
+    }
 
     if (overrideQuery != null) return runSearch(q);
     return new Promise<SearchOutcome | null>((resolve) => {
