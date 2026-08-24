@@ -1,66 +1,84 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import DOMPurify from 'dompurify'
-import katex from 'katex'
-import { marked } from 'marked'
+import { computed } from "vue";
+import DOMPurify from "dompurify";
+import katex from "katex";
+import { marked } from "marked";
 
 const props = defineProps<{
-  source: string
-}>()
+  source: string;
+}>();
 
 const html = computed(() => {
   const rendered = marked.parse(props.source, {
     async: false,
     breaks: true,
     gfm: true,
-  })
+  });
 
   const sanitized = DOMPurify.sanitize(rendered, {
-    FORBID_ATTR: ['class', 'id', 'style'],
-    FORBID_TAGS: ['button', 'embed', 'form', 'iframe', 'input', 'object', 'script', 'style'],
+    FORBID_ATTR: ["class", "id", "style"],
+    FORBID_TAGS: [
+      "button",
+      "embed",
+      "form",
+      "iframe",
+      "input",
+      "object",
+      "script",
+      "style",
+    ],
     USE_PROFILES: { html: true },
-  })
+  });
 
-  return renderMath(sanitized as string)
-})
+  return renderMath(sanitized as string);
+});
 
 function renderMath(html: string): string {
-  const mathPattern = /\$\$([\s\S]*?)\$\$|\\\[([\s\S]*?)\\\]|\$([^$\n]+?)\$|\\\(([\s\S]*?)\\\)/g
+  const mathPattern =
+    /\$\$([\s\S]*?)\$\$|\\\[([\s\S]*?)\\\]|\$([^$\n]+?)\$|\\\(([\s\S]*?)\\\)/g;
 
   return html.replace(
     mathPattern,
-    (_, displayDollar: string | undefined, displayBracket: string | undefined, inlineDollar: string | undefined, inlineParen: string | undefined) => {
-      const formulaHtml = displayDollar ?? displayBracket ?? inlineDollar ?? inlineParen ?? ''
-      const displayMode = displayDollar !== undefined || displayBracket !== undefined
-      const formula = extractFormulaText(formulaHtml)
+    (
+      _,
+      displayDollar: string | undefined,
+      displayBracket: string | undefined,
+      inlineDollar: string | undefined,
+      inlineParen: string | undefined,
+    ) => {
+      const formulaHtml =
+        displayDollar ?? displayBracket ?? inlineDollar ?? inlineParen ?? "";
+      const displayMode =
+        displayDollar !== undefined || displayBracket !== undefined;
+      const formula = extractFormulaText(formulaHtml);
 
       try {
         return katex.renderToString(formula, {
           displayMode,
           throwOnError: false,
           trust: false,
-        })
+        });
       } catch {
-        return `<code class="text-red-600">公式错误: ${escapeHtml(formula)}</code>`
+        return `<code class="text-red-600">公式错误: ${escapeHtml(formula)}</code>`;
       }
     },
-  )
+  );
 }
 
 function extractFormulaText(formulaHtml: string): string {
-  const normalized = formulaHtml.replace(/<br\s*\/?>/gi, '\n')
-  const container = document.createElement('div')
-  container.innerHTML = normalized
-  return (container.textContent ?? '').trim()
+  const normalized = formulaHtml.replace(/<br\s*\/?>/gi, "\n");
+  const container = document.createElement("div");
+  container.innerHTML = normalized;
+  return (container.textContent ?? "").trim();
 }
 
 function escapeHtml(value: string): string {
   return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;')
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 </script>
 
@@ -81,7 +99,9 @@ function escapeHtml(value: string): string {
   padding: 1rem 1.25rem;
   color: #24292f;
   line-height: 1.65;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    monospace;
 }
 
 .code-lined-markdown :deep(pre > code) {

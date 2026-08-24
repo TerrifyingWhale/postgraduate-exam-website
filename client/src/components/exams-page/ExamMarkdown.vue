@@ -1,74 +1,92 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import DOMPurify from 'dompurify'
-import katex from 'katex'
-import { marked } from 'marked'
+import { computed } from "vue";
+import DOMPurify from "dompurify";
+import katex from "katex";
+import { marked } from "marked";
 
-const props = defineProps<{ source?: string; inline?: boolean }>()
+const props = defineProps<{ source?: string; inline?: boolean }>();
 
 const html = computed(() => {
-  const rendered = marked.parse(props.source || '', {
+  const rendered = marked.parse(props.source || "", {
     async: false,
     breaks: true,
     gfm: true,
-  })
+  });
 
   // 给绝对路径 <img src="/..."> 拼上 Vite base，修复 GitHub Pages 二级目录下图片 404
-  const withBase = rewriteImgSrc(rendered as string)
+  const withBase = rewriteImgSrc(rendered as string);
 
   const sanitized = DOMPurify.sanitize(withBase, {
-    FORBID_ATTR: ['class', 'id', 'style'],
-    FORBID_TAGS: ['button', 'embed', 'form', 'iframe', 'input', 'object', 'script', 'style'],
+    FORBID_ATTR: ["class", "id", "style"],
+    FORBID_TAGS: [
+      "button",
+      "embed",
+      "form",
+      "iframe",
+      "input",
+      "object",
+      "script",
+      "style",
+    ],
     USE_PROFILES: { html: true },
-  })
+  });
 
-  return renderMath(sanitized as string)
-})
+  return renderMath(sanitized as string);
+});
 
 /** 把 markdown 渲染出的 <img src="/xxx"> 改成 BASE_URL + /xxx，适配二级目录部署 */
 function rewriteImgSrc(html: string): string {
-  const base = import.meta.env.BASE_URL ?? '/'
-  if (!base || base === '/') return html
-  return html.replace(/(<img\s+[^>]*?src=["'])\/(?!\/)/gi, `$1${base}`)
+  const base = import.meta.env.BASE_URL ?? "/";
+  if (!base || base === "/") return html;
+  return html.replace(/(<img\s+[^>]*?src=["'])\/(?!\/)/gi, `$1${base}`);
 }
 
 function renderMath(html: string): string {
-  const mathPattern = /\$\$([\s\S]*?)\$\$|\\\[([\s\S]*?)\\\]|\$([^$\n]+?)\$|\\\(([\s\S]*?)\\\)/g
+  const mathPattern =
+    /\$\$([\s\S]*?)\$\$|\\\[([\s\S]*?)\\\]|\$([^$\n]+?)\$|\\\(([\s\S]*?)\\\)/g;
 
   return html.replace(
     mathPattern,
-    (_, displayDollar: string | undefined, displayBracket: string | undefined, inlineDollar: string | undefined, inlineParen: string | undefined) => {
-      const formulaHtml = displayDollar ?? displayBracket ?? inlineDollar ?? inlineParen ?? ''
-      const displayMode = displayDollar !== undefined || displayBracket !== undefined
-      const formula = extractFormulaText(formulaHtml)
+    (
+      _,
+      displayDollar: string | undefined,
+      displayBracket: string | undefined,
+      inlineDollar: string | undefined,
+      inlineParen: string | undefined,
+    ) => {
+      const formulaHtml =
+        displayDollar ?? displayBracket ?? inlineDollar ?? inlineParen ?? "";
+      const displayMode =
+        displayDollar !== undefined || displayBracket !== undefined;
+      const formula = extractFormulaText(formulaHtml);
 
       try {
         return katex.renderToString(formula, {
           displayMode,
           throwOnError: false,
           trust: false,
-        })
+        });
       } catch {
-        return `<code>公式错误: ${escapeHtml(formula)}</code>`
+        return `<code>公式错误: ${escapeHtml(formula)}</code>`;
       }
     },
-  )
+  );
 }
 
 function extractFormulaText(formulaHtml: string): string {
-  const normalized = formulaHtml.replace(/<br\s*\/?>/gi, '\n')
-  const container = document.createElement('div')
-  container.innerHTML = normalized
-  return (container.textContent ?? '').trim()
+  const normalized = formulaHtml.replace(/<br\s*\/?>/gi, "\n");
+  const container = document.createElement("div");
+  container.innerHTML = normalized;
+  return (container.textContent ?? "").trim();
 }
 
 function escapeHtml(value: string): string {
   return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;')
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 </script>
 
@@ -93,7 +111,9 @@ function escapeHtml(value: string): string {
   padding: 1rem 1.25rem;
   color: #24292f;
   line-height: 1.65;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    monospace;
 }
 
 .code-lined-markdown :deep(pre > code) {

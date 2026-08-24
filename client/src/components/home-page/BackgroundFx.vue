@@ -1,34 +1,34 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from "vue";
 
 /* 鼠标跟随背景：把鼠标坐标写到 CSS 变量 --mx / --my
  *  - 底层 radial-gradient 光斑跟随
  *  - 上层 grid 网格的径向 mask 跟随 */
 const bgStyle = ref<Record<string, string>>({
-  '--mx': '50%',
-  '--my': '33%',
-})
-let mouseRaf = 0
+  "--mx": "50%",
+  "--my": "33%",
+});
+let mouseRaf = 0;
 function onMouseMove(e: MouseEvent) {
-  if (mouseRaf) return
+  if (mouseRaf) return;
   mouseRaf = requestAnimationFrame(() => {
-    const x = (e.clientX / window.innerWidth) * 100
-    const y = (e.clientY / window.innerHeight) * 100
+    const x = (e.clientX / window.innerWidth) * 100;
+    const y = (e.clientY / window.innerHeight) * 100;
     bgStyle.value = {
-      '--mx': x.toFixed(2) + '%',
-      '--my': y.toFixed(2) + '%',
-    }
-    mouseRaf = 0
-  })
+      "--mx": x.toFixed(2) + "%",
+      "--my": y.toFixed(2) + "%",
+    };
+    mouseRaf = 0;
+  });
 }
 
 onMounted(() => {
-  window.addEventListener('mousemove', onMouseMove, { passive: true })
-})
+  window.addEventListener("mousemove", onMouseMove, { passive: true });
+});
 onBeforeUnmount(() => {
-  if (mouseRaf) cancelAnimationFrame(mouseRaf)
-  window.removeEventListener('mousemove', onMouseMove)
-})
+  if (mouseRaf) cancelAnimationFrame(mouseRaf);
+  window.removeEventListener("mousemove", onMouseMove);
+});
 </script>
 
 <template>
@@ -78,8 +78,8 @@ onBeforeUnmount(() => {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(122, 184, 196, 0.10) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(122, 184, 196, 0.10) 1px, transparent 1px);
+    linear-gradient(rgba(122, 184, 196, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(122, 184, 196, 0.1) 1px, transparent 1px);
   background-size: 48px 48px;
   -webkit-mask-image: radial-gradient(
     circle at var(--mx, 50%) var(--my, 33%),

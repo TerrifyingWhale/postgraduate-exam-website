@@ -1,55 +1,62 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 
-export type ExamKnowledgeLinkItem = { key: string; title: string; href: string }
+export type ExamKnowledgeLinkItem = {
+  key: string;
+  title: string;
+  href: string;
+};
 
-const props = withDefaults(defineProps<{
-  open: boolean
-  linkedKnowledge: ExamKnowledgeLinkItem[]
-  /** 选择题、已选中选项、尚未作答 → 菜单显示「提交答案」 */
-  canSubmit: boolean
-  /** 答案与解析是否已加载 */
-  hasAnswer: boolean
-  answerExpanded: boolean
-}>(), {
-  linkedKnowledge: () => [],
-})
+const props = withDefaults(
+  defineProps<{
+    open: boolean;
+    linkedKnowledge: ExamKnowledgeLinkItem[];
+    /** 选择题、已选中选项、尚未作答 → 菜单显示「提交答案」 */
+    canSubmit: boolean;
+    /** 答案与解析是否已加载 */
+    hasAnswer: boolean;
+    answerExpanded: boolean;
+  }>(),
+  {
+    linkedKnowledge: () => [],
+  },
+);
 
 const emit = defineEmits<{
-  toggle: []
-  close: []
-  reveal: []
-  submit: []
-  toggleAnswer: []
-}>()
+  toggle: [];
+  close: [];
+  reveal: [];
+  submit: [];
+  toggleAnswer: [];
+}>();
 
-const root = ref<HTMLElement | null>(null)
-const knowledgeExpanded = ref(false)
+const root = ref<HTMLElement | null>(null);
+const knowledgeExpanded = ref(false);
 
 watch(
   () => props.open,
   (open) => {
-    if (!open) knowledgeExpanded.value = false
+    if (!open) knowledgeExpanded.value = false;
   },
-)
+);
 
 function onClickOutside(event: MouseEvent) {
-  if (!props.open) return
-  if (root.value && !root.value.contains(event.target as Node)) emit('close')
+  if (!props.open) return;
+  if (root.value && !root.value.contains(event.target as Node)) emit("close");
 }
 
 function onKeydown(event: KeyboardEvent) {
-  if (event.key === 'Escape' && props.open) emit('close')
+  if (event.key === "Escape" && props.open) emit("close");
 }
 
 onMounted(() => {
-  document.addEventListener('click', onClickOutside)
-  document.addEventListener('keydown', onKeydown)
-})
+  document.addEventListener("click", onClickOutside);
+  document.addEventListener("keydown", onKeydown);
+});
 onBeforeUnmount(() => {
-  document.removeEventListener('click', onClickOutside)
-  document.removeEventListener('keydown', onKeydown)
-})
+  document.removeEventListener("click", onClickOutside);
+  document.removeEventListener("keydown", onKeydown);
+});
 </script>
 
 <template>
@@ -60,9 +67,11 @@ onBeforeUnmount(() => {
       aria-haspopup="menu"
       :aria-expanded="open"
       class="inline-grid h-9 w-9 place-items-center rounded-[6px] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#8ea7d0]"
-      :class="open
-        ? 'bg-[#edf2fa] text-[#12327f]'
-        : 'text-[#8b99b0] opacity-60 group-hover:opacity-100 group-focus-within:opacity-100 hover:bg-[#edf2fa] hover:text-[#12327f] focus-visible:opacity-100'"
+      :class="
+        open
+          ? 'bg-[#edf2fa] text-[#12327f]'
+          : 'text-[#8b99b0] opacity-60 group-hover:opacity-100 group-focus-within:opacity-100 hover:bg-[#edf2fa] hover:text-[#12327f] focus-visible:opacity-100'
+      "
       @click="emit('toggle')"
     >
       <span class="flex flex-col items-center gap-[3px]" aria-hidden="true">
@@ -88,16 +97,36 @@ onBeforeUnmount(() => {
             class="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-[13px] font-medium text-[#334155] transition-colors hover:bg-[#f4f7fb] hover:text-[#12327f]"
             @click="knowledgeExpanded = !knowledgeExpanded"
           >
-            <svg class="h-4 w-4 shrink-0 opacity-70" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 6 3 10l4 4" /><path d="M13 6l4 4-4 4" /><path d="M11 3l-2 14" /></svg>
+            <svg
+              class="h-4 w-4 shrink-0 opacity-70"
+              viewBox="0 0 20 20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              aria-hidden="true"
+            >
+              <path d="M7 6 3 10l4 4" />
+              <path d="M13 6l4 4-4 4" />
+              <path d="M11 3l-2 14" />
+            </svg>
             关联子知识点
-            <span class="ml-auto text-[#a3b0c3] transition-transform" :class="knowledgeExpanded ? 'rotate-90 -mr-0.5' : ''" aria-hidden="true">▸</span>
+            <span
+              class="ml-auto text-[#a3b0c3] transition-transform"
+              :class="knowledgeExpanded ? 'rotate-90 -mr-0.5' : ''"
+              aria-hidden="true"
+              >▸</span
+            >
           </button>
-          <ul v-if="knowledgeExpanded" class="m-0 list-none border-t border-[#eef2f7] py-1 pl-9">
+          <ul
+            v-if="knowledgeExpanded"
+            class="m-0 list-none border-t border-[#eef2f7] py-1 pl-9"
+          >
             <li v-for="link in linkedKnowledge" :key="link.key">
               <a
                 :href="link.href"
                 class="block py-1.5 pr-2 text-[13px] leading-5 text-[#54698b] transition-colors hover:text-[#12327f]"
-              >{{ link.title }}</a>
+                >{{ link.title }}</a
+              >
             </li>
           </ul>
         </template>
@@ -110,7 +139,16 @@ onBeforeUnmount(() => {
           class="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-[13px] font-medium text-[#334155] transition-colors hover:bg-[#f4f7fb] hover:text-[#12327f]"
           @click="emit('submit')"
         >
-          <svg class="h-4 w-4 shrink-0 opacity-70" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m4 10 4 4 8-8" /></svg>
+          <svg
+            class="h-4 w-4 shrink-0 opacity-70"
+            viewBox="0 0 20 20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            aria-hidden="true"
+          >
+            <path d="m4 10 4 4 8-8" />
+          </svg>
           提交答案
         </button>
 
@@ -122,8 +160,20 @@ onBeforeUnmount(() => {
           class="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-[13px] font-medium text-[#334155] transition-colors hover:bg-[#f4f7fb] hover:text-[#12327f]"
           @click="emit('toggleAnswer')"
         >
-          <svg class="h-4 w-4 shrink-0 opacity-70" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 3h10a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" /><path d="M8 7h4M8 10h4" /></svg>
-          {{ answerExpanded ? '收起答案' : '展开答案' }}
+          <svg
+            class="h-4 w-4 shrink-0 opacity-70"
+            viewBox="0 0 20 20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            aria-hidden="true"
+          >
+            <path
+              d="M5 3h10a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"
+            />
+            <path d="M8 7h4M8 10h4" />
+          </svg>
+          {{ answerExpanded ? "收起答案" : "展开答案" }}
         </button>
         <button
           v-else
@@ -132,7 +182,19 @@ onBeforeUnmount(() => {
           class="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-[13px] font-medium text-[#334155] transition-colors hover:bg-[#f4f7fb] hover:text-[#12327f]"
           @click="emit('reveal')"
         >
-          <svg class="h-4 w-4 shrink-0 opacity-70" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 3h10a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" /><path d="M8 7h4M8 10h4" /></svg>
+          <svg
+            class="h-4 w-4 shrink-0 opacity-70"
+            viewBox="0 0 20 20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            aria-hidden="true"
+          >
+            <path
+              d="M5 3h10a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"
+            />
+            <path d="M8 7h4M8 10h4" />
+          </svg>
           答案与解析
         </button>
       </div>
@@ -143,7 +205,9 @@ onBeforeUnmount(() => {
 <style scoped>
 .tools-pop-enter-active,
 .tools-pop-leave-active {
-  transition: opacity 0.16s ease, transform 0.16s ease;
+  transition:
+    opacity 0.16s ease,
+    transform 0.16s ease;
 }
 .tools-pop-enter-from,
 .tools-pop-leave-to {

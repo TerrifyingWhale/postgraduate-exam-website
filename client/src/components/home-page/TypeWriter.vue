@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from "vue";
 
 /* 打字机副标题：循环展示多句话
  *  - 进页面先显示空 + 闪烁光标
@@ -8,66 +8,67 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
  *  - 倒退删除（每字 35ms）
  *  - 句间停 400ms 再打下一句 */
 const ROTATING_LINES = [
-  '用更少的内容，建立更清晰的知识体系',
-  '开源 · 共建 · 共享，新时代的 AI 原生电子教材',
-  'Less is more ：只收录 408 应试知识最小集',
-  '用图像和交互式动画，帮助你快速掌握复杂的知识',
-]
+  "用更少的内容，建立更清晰的知识体系",
+  "开源 · 共建 · 共享，新时代的 AI 原生电子教材",
+  "Less is more ：只收录 408 应试知识最小集",
+  "用图像和交互式动画，帮助你快速掌握复杂的知识",
+];
 
-const typedText = ref('')
-type TypePhase = 'typing' | 'holding' | 'deleting' | 'wait'
-let typePhase: TypePhase = 'typing'
-let typeIdx = 0
-let typeChar = 0
-let typeTimer: ReturnType<typeof setTimeout> | null = null
+const typedText = ref("");
+type TypePhase = "typing" | "holding" | "deleting" | "wait";
+let typePhase: TypePhase = "typing";
+let typeIdx = 0;
+let typeChar = 0;
+let typeTimer: ReturnType<typeof setTimeout> | null = null;
 
 function scheduleType(delay: number) {
-  if (typeTimer) clearTimeout(typeTimer)
-  typeTimer = setTimeout(typeStep, delay)
+  if (typeTimer) clearTimeout(typeTimer);
+  typeTimer = setTimeout(typeStep, delay);
 }
 
 function typeStep() {
-  const full = ROTATING_LINES[typeIdx]
-  if (typePhase === 'typing') {
-    typeChar += 1
-    typedText.value = full.slice(0, typeChar)
+  const full = ROTATING_LINES[typeIdx];
+  if (typePhase === "typing") {
+    typeChar += 1;
+    typedText.value = full.slice(0, typeChar);
     if (typeChar >= full.length) {
-      typePhase = 'holding'
-      scheduleType(2500)
+      typePhase = "holding";
+      scheduleType(2500);
     } else {
-      scheduleType(70 + Math.random() * 60)
+      scheduleType(70 + Math.random() * 60);
     }
-  } else if (typePhase === 'holding') {
-    typePhase = 'deleting'
-    scheduleType(80)
-  } else if (typePhase === 'deleting') {
-    typeChar -= 1
-    typedText.value = full.slice(0, typeChar)
+  } else if (typePhase === "holding") {
+    typePhase = "deleting";
+    scheduleType(80);
+  } else if (typePhase === "deleting") {
+    typeChar -= 1;
+    typedText.value = full.slice(0, typeChar);
     if (typeChar <= 0) {
-      typeIdx = (typeIdx + 1) % ROTATING_LINES.length
-      typePhase = 'wait'
-      scheduleType(400)
+      typeIdx = (typeIdx + 1) % ROTATING_LINES.length;
+      typePhase = "wait";
+      scheduleType(400);
     } else {
-      scheduleType(35)
+      scheduleType(35);
     }
   } else {
-    typePhase = 'typing'
-    typeStep()
+    typePhase = "typing";
+    typeStep();
   }
 }
 
 onMounted(() => {
-  scheduleType(220)
-})
+  scheduleType(220);
+});
 onBeforeUnmount(() => {
-  if (typeTimer) clearTimeout(typeTimer)
-})
+  if (typeTimer) clearTimeout(typeTimer);
+});
 </script>
 
 <template>
   <div class="typed-wrap">
     <p class="typed-line">
-      <span>{{ typedText }}</span><span class="caret">|</span>
+      <span>{{ typedText }}</span
+      ><span class="caret">|</span>
     </p>
   </div>
 </template>

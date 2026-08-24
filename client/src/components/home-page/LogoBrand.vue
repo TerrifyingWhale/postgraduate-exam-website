@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import beta from './beta.vue'
+import beta from "./beta.vue";
 </script>
 
 <template>
@@ -18,9 +18,17 @@ import beta from './beta.vue'
       />
       <circle class="logo-dot logo-dot-1" cx="6" cy="14" r="4" fill="#1d4ed8" />
       <circle class="logo-dot logo-dot-2" cx="26" cy="5" r="4" fill="#38bdf8" />
-      <circle class="logo-dot logo-dot-3" cx="26" cy="23" r="4" fill="#06b6d4" />
+      <circle
+        class="logo-dot logo-dot-3"
+        cx="26"
+        cy="23"
+        r="4"
+        fill="#06b6d4"
+      />
     </svg>
-    <div class="brand-text text-[34px] font-extrabold tracking-[-1px] font-mono">
+    <div
+      class="brand-text text-[34px] font-extrabold tracking-[-1px] font-mono"
+    >
       408 简纲
     </div>
     <beta />

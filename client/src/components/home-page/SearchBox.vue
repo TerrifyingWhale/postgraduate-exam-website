@@ -1,30 +1,30 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
-import { warmSearch } from '@/search/shared'
+import { ref, watch } from "vue";
+import { useRouter } from "vue-router";
+import { warmSearch } from "@/search/shared";
 
-const router = useRouter()
-const query = ref('')
+const router = useRouter();
+const query = ref("");
 
 /** 输入字符上限：超过自动截断到前 20 字 */
-const MAX_QUERY_LEN = 20
+const MAX_QUERY_LEN = 20;
 watch(query, (v) => {
   if (v && v.length > MAX_QUERY_LEN) {
-    query.value = v.slice(0, MAX_QUERY_LEN)
+    query.value = v.slice(0, MAX_QUERY_LEN);
   }
-})
+});
 
 function onSearchKeydown(e: KeyboardEvent) {
-  if (e.key === 'Enter') {
-    e.preventDefault()
-    submit()
+  if (e.key === "Enter") {
+    e.preventDefault();
+    submit();
   }
 }
 
 function submit() {
-  const q = query.value.trim()
-  if (!q) return
-  router.push({ name: 'search', query: { q } })
+  const q = query.value.trim();
+  if (!q) return;
+  router.push({ name: "search", query: { q } });
 }
 </script>
 
@@ -55,7 +55,9 @@ function submit() {
 
 <style scoped>
 .search-btn {
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
 }
 .search-btn:hover {
   transform: scale(1.06);
