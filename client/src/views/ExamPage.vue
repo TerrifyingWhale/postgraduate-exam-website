@@ -12,6 +12,12 @@ const examPage = useExamPage()
     class="relative grid min-h-screen overflow-x-clip bg-[#edf1f6] text-[#071225] transition-[grid-template-columns] duration-500 ease-[cubic-bezier(.22,1,.36,1)]"
     :style="{ gridTemplateColumns: examPage.drawerColumns.value }"
   >
+    <div
+      v-if="examPage.compactLayout.value && (examPage.drawerOpen.value || examPage.rightOpen.value)"
+      class="fixed inset-0 z-20 bg-black/30 backdrop-blur-[2px]"
+      @click="examPage.closeMobileDrawers"
+    ></div>
+
     <ExamFilterDrawer
       :current-filter-text="examPage.currentFilterText.value"
       :filters="examPage.filters.value"

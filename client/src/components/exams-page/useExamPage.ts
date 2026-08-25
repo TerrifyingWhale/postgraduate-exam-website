@@ -47,13 +47,18 @@ export function useExamPage() {
   });
   let keywordTimer: number | undefined;
 
-  const drawerOpen = computed(
-    () =>
-      drawerPinned.value ||
-      drawerHovered.value ||
-      Boolean(selection.keyword.trim()),
+  const drawerOpen = computed(() =>
+    compactLayout.value
+      ? drawerPinned.value
+      : drawerPinned.value ||
+        drawerHovered.value ||
+        Boolean(selection.keyword.trim()),
   );
-  const rightOpen = computed(() => rightHovered.value || rightPinned.value);
+  const rightOpen = computed(() =>
+    compactLayout.value
+      ? rightPinned.value
+      : rightHovered.value || rightPinned.value,
+  );
   const drawerColumns = computed(() =>
     compactLayout.value
       ? "minmax(0,1fr)"
@@ -219,6 +224,13 @@ export function useExamPage() {
     compactLayout.value = window.innerWidth < 1024;
   }
 
+  function closeMobileDrawers() {
+    drawerPinned.value = false;
+    drawerHovered.value = false;
+    rightPinned.value = false;
+    rightHovered.value = false;
+  }
+
   watch(
     () => [
       selection.year,
@@ -280,6 +292,7 @@ export function useExamPage() {
   return {
     activeExamId,
     changePage,
+    closeMobileDrawers,
     compactLayout,
     currentFilterText,
     drawerColumns,
