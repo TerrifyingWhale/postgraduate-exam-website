@@ -38,15 +38,15 @@ const socials: Social[] = [
       </div>
 
       <!-- 备案信息 -->
-      <!-- <div class="footer-row filing-row">
+      <div class="footer-row filing-row">
         <span>© 2026 408 简纲</span>
         <a
           href="https://beian.miit.gov.cn/"
           target="_blank"
           rel="noopener noreferrer"
           class="filing-link"
-        >京ICP备2026000000号-1</a>
-        <a
+        >鄂ICP备2026046017号-1</a>
+        <!-- <a
           href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11000000000000"
           target="_blank"
           rel="noopener noreferrer"
@@ -54,8 +54,8 @@ const socials: Social[] = [
         >
           <span class="ga-badge">京</span>
           京公网安备 11000002000000 号
-        </a>
-      </div> -->
+        </a> -->
+      </div>
 
       <div class="footer-row tagline-row">
         <span>极简 · 精炼 · 可视化</span>
