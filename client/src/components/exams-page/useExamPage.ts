@@ -134,15 +134,20 @@ export function useExamPage() {
     return query;
   }
 
+  /** 把当前筛选条件写回 URL（replace 不进历史栈，保留 exam 锚点） */
+  function syncFiltersToUrl() {
+    const next: Record<string, string> = { ...buildFilterQuery() };
+    if (route.query.exam) next.exam = String(route.query.exam);
+    router.replace({ query: next });
+  }
+
   function scrollToExam(id: string, smooth = true) {
     activeExamId.value = id;
     document.getElementById(`exam-${id}`)?.scrollIntoView({
       behavior: smooth ? "smooth" : "auto",
       block: "start",
     });
-    router.replace({
-      query: { ...route.query, ...buildFilterQuery(), exam: id },
-    });
+    router.replace({ query: { ...buildFilterQuery(), exam: id } });
   }
 
   async function load(preferredId?: string) {
@@ -193,7 +198,7 @@ export function useExamPage() {
       knowledgeBlockId: "",
     } satisfies ExamFilterSelection);
     page.value = 1;
-    router.replace({ query: {} });
+    syncFiltersToUrl();
     void load();
   }
 
@@ -244,10 +249,14 @@ export function useExamPage() {
     ],
     () => {
       page.value = 1;
+      syncFiltersToUrl();
       void load();
     },
   );
-  watch(() => selection.keyword, scheduleKeywordLoad);
+  watch(() => selection.keyword, () => {
+    syncFiltersToUrl();
+    scheduleKeywordLoad();
+  });
   watch(
     () =>
       String(
