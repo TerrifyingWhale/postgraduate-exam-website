@@ -2,37 +2,32 @@
 import KnowledgeLibraryDrawer from '@/components/knowledge-page/KnowledgeLibraryDrawer.vue'
 import KnowledgeReaderContent from '@/components/knowledge-page/KnowledgeReaderContent.vue'
 import KnowledgeTocDrawer from '@/components/knowledge-page/KnowledgeTocDrawer.vue'
+import ReaderDrawerLayout from '@/components/ReaderDrawerLayout.vue'
 import { useKnowledgeReader } from '@/components/knowledge-page/useKnowledgeReader'
-import { useDualDrawers } from '@/components/useDualDrawers'
 
 const reader = useKnowledgeReader()
-const drawers = useDualDrawers({ leftWidth: 304, rightWidth: 270 })
 </script>
 
 <template>
-  <div
-    class="relative grid min-h-screen overflow-x-clip bg-[#e9eef5] transition-[grid-template-columns] duration-500 ease-[cubic-bezier(.22,1,.36,1)]"
-    :style="{ gridTemplateColumns: drawers.columns.value }"
+  <ReaderDrawerLayout
+    class="bg-[#e9eef5]"
+    :left-width="304"
+    :right-width="270"
   >
-    <div
-      v-if="drawers.compactLayout.value && (drawers.leftOpen.value || drawers.rightOpen.value)"
-      class="fixed inset-0 z-20 bg-black/30 backdrop-blur-[2px]"
-      @click="drawers.closeCompactDrawers"
-    ></div>
-
-    <KnowledgeLibraryDrawer
-      :active-section-id="reader.activeSectionId.value"
-      :book="reader.book.value"
-      :book-id="reader.bookId.value"
-      :books="reader.books"
-      :open="drawers.leftOpen.value"
-      :pinned="drawers.leftPinned.value"
-      @hover="drawers.leftHovered.value = $event"
-      @pin="drawers.leftPinned.value = $event"
-      @query-active="drawers.leftContextOpen.value = $event"
-      @select-book="reader.selectBook"
-      @select-section="reader.selectSection"
-    />
+    <template #left="{ open, pinned, hover, pin }">
+      <KnowledgeLibraryDrawer
+        :active-section-id="reader.activeSectionId.value"
+        :book="reader.book.value"
+        :book-id="reader.bookId.value"
+        :books="reader.books"
+        :open="open"
+        :pinned="pinned"
+        @hover="hover"
+        @pin="pin"
+        @select-book="reader.selectBook"
+        @select-section="reader.selectSection"
+      />
+    </template>
 
     <KnowledgeReaderContent
       :article-entries="reader.articleEntries.value"
@@ -42,13 +37,15 @@ const drawers = useDualDrawers({ leftWidth: 304, rightWidth: 270 })
       :section-exam="reader.sectionExam.value"
     />
 
-    <KnowledgeTocDrawer
-      :entries="reader.tocEntries.value"
-      :open="drawers.rightOpen.value"
-      :pinned="drawers.rightPinned.value"
-      :visible="Boolean(reader.section.value)"
-      @hover="drawers.rightHovered.value = $event"
-      @pin="drawers.rightPinned.value = $event"
-    />
-  </div>
+    <template #right="{ open, pinned, hover, pin }">
+      <KnowledgeTocDrawer
+        :entries="reader.tocEntries.value"
+        :open="open"
+        :pinned="pinned"
+        :visible="Boolean(reader.section.value)"
+        @hover="hover"
+        @pin="pin"
+      />
+    </template>
+  </ReaderDrawerLayout>
 </template>

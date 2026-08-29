@@ -28,6 +28,11 @@ const isLeft = computed(() => props.side === "left");
 const drawerStyle = computed(() => ({
   "--reader-drawer-width": `${props.width}px`,
 }));
+
+function handlePointerHover(event: PointerEvent, value: boolean) {
+  if (event.pointerType !== "mouse") return;
+  emit("hover", value);
+}
 </script>
 
 <template>
@@ -35,7 +40,7 @@ const drawerStyle = computed(() => ({
     class="reader-drawer-trigger fixed inset-y-0 z-50 w-7"
     :class="isLeft ? 'left-0 cursor-e-resize' : 'right-0 cursor-w-resize'"
     :aria-label="triggerLabel"
-    @mouseenter="emit('hover', true)"
+    @pointerenter="handlePointerHover($event, true)"
     @click="emit('pin', true)"
   >
     <span
@@ -67,8 +72,8 @@ const drawerStyle = computed(() => ({
           ],
     ]"
     :style="drawerStyle"
-    @mouseenter="emit('hover', true)"
-    @mouseleave="emit('hover', false)"
+    @pointerenter="handlePointerHover($event, true)"
+    @pointerleave="handlePointerHover($event, false)"
   >
     <header
       v-if="showHeader"
@@ -88,7 +93,7 @@ const drawerStyle = computed(() => ({
         @click="emit('pin', !pinned)"
       >
         <svg
-          class="h-4 w-4 transition-transform"
+          class="reader-drawer-pin-icon h-4 w-4 transition-transform"
           :class="pinned ? '-rotate-45' : ''"
           viewBox="0 0 24 24"
           fill="none"
@@ -102,6 +107,10 @@ const drawerStyle = computed(() => ({
             stroke-linejoin="miter"
           />
         </svg>
+        <DoubleChevronIcon
+          class="reader-drawer-close-icon hidden h-4 w-4"
+          :class="isLeft ? 'rotate-180' : ''"
+        />
       </button>
     </header>
 
@@ -110,7 +119,17 @@ const drawerStyle = computed(() => ({
 </template>
 
 <style scoped>
-@media (max-width: 1023px) {
+@media (hover: none), (pointer: coarse) {
+  .reader-drawer-pin-icon {
+    display: none;
+  }
+
+  .reader-drawer-close-icon {
+    display: block;
+  }
+}
+
+@media (max-width: 639px) {
   .reader-drawer {
     position: fixed;
     inset-block: 0;

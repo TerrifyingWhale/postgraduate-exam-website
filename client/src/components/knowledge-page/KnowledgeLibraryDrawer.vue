@@ -32,7 +32,6 @@ const props = defineProps<{
 const emit = defineEmits<{
   hover: [value: boolean];
   pin: [value: boolean];
-  queryActive: [value: boolean];
   selectBook: [id: string];
   selectSection: [id: string];
 }>();
@@ -236,9 +235,6 @@ function onBookMenuFocusout(event: FocusEvent) {
   bookMenuOpen.value = false;
 }
 
-watch(sidebarQuery, (query) => emit("queryActive", Boolean(query.trim())), {
-  immediate: true,
-});
 watch(
   () => props.open,
   (open) => {

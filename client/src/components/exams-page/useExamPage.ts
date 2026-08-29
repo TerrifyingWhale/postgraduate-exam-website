@@ -10,7 +10,6 @@ import {
 import { useRoute, useRouter } from "vue-router";
 import { content as contentApi } from "@/content";
 import { findSubpointLocationByBlockId } from "@/content/knowledge-articles/registry";
-import { useDualDrawers } from "@/components/useDualDrawers";
 import type { Exam, ExamFilters, ExamSubject } from "@/types";
 import type { ExamFilterPatch, ExamFilterSelection } from "./pageTypes";
 
@@ -41,10 +40,7 @@ export function useExamPage() {
       route.query.knowledgeBlockId || route.query.knowledgeBlockIds || "",
     ),
   });
-  const drawers = useDualDrawers({ leftWidth: 300, rightWidth: 244 });
   let keywordTimer: number | undefined;
-
-  drawers.leftContextOpen.value = Boolean(selection.keyword.trim());
   const selectedKnowledgeNames = computed(() => {
     const names = selection.knowledgeBlockId
       .split(",")
@@ -223,8 +219,7 @@ export function useExamPage() {
       void load();
     },
   );
-  watch(() => selection.keyword, (keyword) => {
-    drawers.leftContextOpen.value = Boolean(keyword.trim());
+  watch(() => selection.keyword, () => {
     syncFiltersToUrl();
     scheduleKeywordLoad();
   });
@@ -270,7 +265,6 @@ export function useExamPage() {
     activeExamId,
     changePage,
     currentFilterText,
-    drawers,
     error,
     exams,
     filters,
