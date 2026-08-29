@@ -8,7 +8,7 @@ import type {
   ExamSubject,
 } from "@/types";
 import BrandLogo from "@/components/BrandLogo.vue";
-import DoubleChevronIcon from "@/components/icons/DoubleChevronIcon.vue";
+import ReaderDrawer from "@/components/ReaderDrawer.vue";
 import { warmSearch } from "@/search/shared";
 import type { ExamFilterPatch, ExamFilterSelection } from "./pageTypes";
 
@@ -116,61 +116,20 @@ watch(
 </script>
 
 <template>
-  <div
-    class="fixed inset-y-0 left-0 z-50 w-7 cursor-e-resize"
-    aria-label="悬停展开真题筛选"
-    @mouseenter="emit('hover', true)"
-    @click="emit('pin', true)"
+  <ReaderDrawer
+    side="left"
+    :width="300"
+    :open="open"
+    :pinned="pinned"
+    surface-class="bg-[#f8fafc]"
+    trigger-label="悬停展开真题筛选"
+    pin-label="真题筛选"
+    @hover="emit('hover', $event)"
+    @pin="emit('pin', $event)"
   >
-    <span
-      v-if="!open"
-      class="absolute left-0 top-1/2 grid h-20 w-6 -translate-y-1/2 place-items-center border border-l-0 border-[#cbd5e1] bg-white/95 text-[#31559e] shadow-lg rounded-r-sm"
-    >
-      <DoubleChevronIcon class="h-4 w-4" />
-    </span>
-  </div>
+    <template #header><BrandLogo /></template>
 
-  <aside
-    class="sticky top-0 z-30 flex h-screen min-w-0 flex-col overflow-hidden border-r border-[#d4dce7] bg-[#f8fafc] transition-[opacity,transform] duration-300 max-lg:fixed max-lg:inset-y-0 max-lg:left-0 max-lg:w-[min(300px,88vw)] max-lg:shadow-[20px_0_70px_rgba(15,23,42,.16)]"
-    :class="
-      open
-        ? 'opacity-100'
-        : 'pointer-events-none opacity-0 max-lg:-translate-x-full'
-    "
-    @mouseenter="emit('hover', true)"
-    @mouseleave="emit('hover', false)"
-  >
-    <header class="px-5 pb-5 pt-6">
-      <div class="mb-7 flex items-center justify-between">
-        <BrandLogo />
-        <button
-          type="button"
-          class="grid h-9 w-9 place-items-center border transition"
-          :class="
-            pinned
-              ? 'border-[#12327f] bg-[#12327f] text-white'
-              : 'border-[#cbd5e1] bg-white text-slate-500'
-          "
-          :aria-label="pinned ? '取消固定真题筛选' : '固定真题筛选'"
-          @click="emit('pin', !pinned)"
-        >
-          <svg
-            class="h-4 w-4 transition-transform"
-            :class="pinned ? '-rotate-45' : ''"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.8"
-            aria-hidden="true"
-          >
-            <path
-              d="M12 17v5M7 3h10M8 3l1 7-3 4h12l-3-4 1-7"
-              stroke-linecap="square"
-              stroke-linejoin="miter"
-            />
-          </svg>
-        </button>
-      </div>
+    <section class="px-5 pb-5 pt-5">
       <label class="relative block" @pointerenter="warmSearch">
         <span class="sr-only">搜索真题</span>
         <Search
@@ -192,7 +151,7 @@ watch(
           @keydown="onSearchKeydown"
         />
       </label>
-    </header>
+    </section>
 
     <div class="min-h-0 flex-1 overflow-y-auto px-3 pb-10 pt-3">
       <section class="mb-1 px-3" aria-live="polite" aria-label="当前筛选">
@@ -383,7 +342,7 @@ watch(
         </ol>
       </nav>
     </div>
-  </aside>
+  </ReaderDrawer>
 </template>
 
 <style scoped>

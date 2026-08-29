@@ -1,33 +1,40 @@
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 
-const LEFT_DRAWER_WIDTH = 304;
-const RIGHT_DRAWER_WIDTH = 270;
+type DualDrawerOptions = {
+  leftWidth: number;
+  rightWidth: number;
+  compactBreakpoint?: number;
+};
 
-export function useReaderDrawers() {
+export function useDualDrawers({
+  leftWidth,
+  rightWidth,
+  compactBreakpoint = 1024,
+}: DualDrawerOptions) {
   const compactLayout = ref(false);
   const leftHovered = ref(false);
   const leftPinned = ref(false);
-  const leftQueryActive = ref(false);
+  const leftContextOpen = ref(false);
   const rightHovered = ref(false);
   const rightPinned = ref(false);
 
   const leftOpen = computed(() =>
     compactLayout.value
       ? leftPinned.value
-      : leftPinned.value || leftHovered.value || leftQueryActive.value,
+      : leftPinned.value || leftHovered.value || leftContextOpen.value,
   );
   const rightOpen = computed(() =>
     compactLayout.value
       ? rightPinned.value
       : rightPinned.value || rightHovered.value,
   );
-  const readerColumns = computed(() =>
+  const columns = computed(() =>
     compactLayout.value
       ? "minmax(0,1fr)"
-      : `${leftOpen.value ? LEFT_DRAWER_WIDTH : 0}px minmax(0,1fr) ${rightOpen.value ? RIGHT_DRAWER_WIDTH : 0}px`,
+      : `${leftOpen.value ? leftWidth : 0}px minmax(0,1fr) ${rightOpen.value ? rightWidth : 0}px`,
   );
 
-  function closeMobileDrawers() {
+  function closeCompactDrawers() {
     leftPinned.value = false;
     leftHovered.value = false;
     rightPinned.value = false;
@@ -35,7 +42,7 @@ export function useReaderDrawers() {
   }
 
   function updateLayoutMode() {
-    compactLayout.value = window.innerWidth < 1024;
+    compactLayout.value = window.innerWidth < compactBreakpoint;
   }
 
   onMounted(() => {
@@ -45,13 +52,13 @@ export function useReaderDrawers() {
   onBeforeUnmount(() => window.removeEventListener("resize", updateLayoutMode));
 
   return {
-    closeMobileDrawers,
+    closeCompactDrawers,
+    columns,
     compactLayout,
+    leftContextOpen,
     leftHovered,
     leftOpen,
     leftPinned,
-    leftQueryActive,
-    readerColumns,
     rightHovered,
     rightOpen,
     rightPinned,

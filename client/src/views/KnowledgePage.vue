@@ -3,21 +3,21 @@ import KnowledgeLibraryDrawer from '@/components/knowledge-page/KnowledgeLibrary
 import KnowledgeReaderContent from '@/components/knowledge-page/KnowledgeReaderContent.vue'
 import KnowledgeTocDrawer from '@/components/knowledge-page/KnowledgeTocDrawer.vue'
 import { useKnowledgeReader } from '@/components/knowledge-page/useKnowledgeReader'
-import { useReaderDrawers } from '@/components/knowledge-page/useReaderDrawers'
+import { useDualDrawers } from '@/components/useDualDrawers'
 
 const reader = useKnowledgeReader()
-const drawers = useReaderDrawers()
+const drawers = useDualDrawers({ leftWidth: 304, rightWidth: 270 })
 </script>
 
 <template>
   <div
     class="relative grid min-h-screen overflow-x-clip bg-[#e9eef5] transition-[grid-template-columns] duration-500 ease-[cubic-bezier(.22,1,.36,1)]"
-    :style="{ gridTemplateColumns: drawers.readerColumns.value }"
+    :style="{ gridTemplateColumns: drawers.columns.value }"
   >
     <div
       v-if="drawers.compactLayout.value && (drawers.leftOpen.value || drawers.rightOpen.value)"
       class="fixed inset-0 z-20 bg-black/30 backdrop-blur-[2px]"
-      @click="drawers.closeMobileDrawers"
+      @click="drawers.closeCompactDrawers"
     ></div>
 
     <KnowledgeLibraryDrawer
@@ -29,7 +29,7 @@ const drawers = useReaderDrawers()
       :pinned="drawers.leftPinned.value"
       @hover="drawers.leftHovered.value = $event"
       @pin="drawers.leftPinned.value = $event"
-      @query-active="drawers.leftQueryActive.value = $event"
+      @query-active="drawers.leftContextOpen.value = $event"
       @select-book="reader.selectBook"
       @select-section="reader.selectSection"
     />

@@ -17,10 +17,7 @@ export type KnowledgeTocEntry = {
 
 const props = defineProps<{
   entries: KnowledgeTocEntry[];
-  pinned?: boolean;
 }>();
-
-defineEmits<{ togglePin: [] }>();
 
 const activeId = ref("");
 const pendingNavigationId = ref("");
@@ -166,51 +163,6 @@ onBeforeUnmount(() => {
     data-testid="knowledge-toc"
     class="h-full overflow-y-auto px-5 pb-10 pt-6"
   >
-    <header
-      class="mb-6 flex items-center justify-between gap-3 border-b border-[#dce3ec] pb-5"
-    >
-      <div>
-        <p
-          class="mb-1 mt-0 font-mono text-[9px] font-bold tracking-[.16em] text-[#31559e]"
-        >
-          ON THIS PAGE
-        </p>
-        <h2
-          class="m-0 text-[15px] font-semibold tracking-[-.015em] text-[#071225]"
-        >
-          本节目录
-        </h2>
-      </div>
-      <button
-        type="button"
-        class="grid h-9 w-9 place-items-center border transition"
-        :class="
-          pinned
-            ? 'border-[#12327f] bg-[#12327f] text-white'
-            : 'border-[#cbd5e1] bg-white text-slate-500 hover:border-[#12327f] hover:text-[#12327f]'
-        "
-        :aria-label="pinned ? '取消固定本节目录' : '固定本节目录'"
-        :title="pinned ? '取消固定' : '固定目录'"
-        @click="$emit('togglePin')"
-      >
-        <svg
-          class="h-4 w-4 transition-transform"
-          :class="pinned ? '-rotate-45' : ''"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.8"
-          aria-hidden="true"
-        >
-          <path
-            d="M12 17v5M7 3h10M8 3l1 7-3 4h12l-3-4 1-7"
-            stroke-linecap="square"
-            stroke-linejoin="miter"
-          />
-        </svg>
-      </button>
-    </header>
-
     <ol class="m-0 list-none space-y-7 p-0">
       <li v-for="entry in entries" :key="entry.id">
         <a

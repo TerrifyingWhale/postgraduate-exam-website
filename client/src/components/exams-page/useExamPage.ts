@@ -10,6 +10,7 @@ import {
 import { useRoute, useRouter } from "vue-router";
 import { content as contentApi } from "@/content";
 import { findSubpointLocationByBlockId } from "@/content/knowledge-articles/registry";
+import { useDualDrawers } from "@/components/useDualDrawers";
 import type { Exam, ExamFilters, ExamSubject } from "@/types";
 import type { ExamFilterPatch, ExamFilterSelection } from "./pageTypes";
 
@@ -26,11 +27,6 @@ export function useExamPage() {
   const total = ref(0);
   const totalPages = ref(0);
   const activeExamId = ref("");
-  const drawerHovered = ref(false);
-  const drawerPinned = ref(false);
-  const rightHovered = ref(false);
-  const rightPinned = ref(false);
-  const compactLayout = ref(false);
   const selection = reactive<ExamFilterSelection>({
     keyword: "",
     year: route.query.year ? Number(route.query.year) : undefined,
@@ -45,25 +41,10 @@ export function useExamPage() {
       route.query.knowledgeBlockId || route.query.knowledgeBlockIds || "",
     ),
   });
+  const drawers = useDualDrawers({ leftWidth: 300, rightWidth: 244 });
   let keywordTimer: number | undefined;
 
-  const drawerOpen = computed(() =>
-    compactLayout.value
-      ? drawerPinned.value
-      : drawerPinned.value ||
-        drawerHovered.value ||
-        Boolean(selection.keyword.trim()),
-  );
-  const rightOpen = computed(() =>
-    compactLayout.value
-      ? rightPinned.value
-      : rightHovered.value || rightPinned.value,
-  );
-  const drawerColumns = computed(() =>
-    compactLayout.value
-      ? "minmax(0,1fr)"
-      : `${drawerOpen.value ? 300 : 0}px minmax(0,1fr) ${rightOpen.value ? 244 : 0}px`,
-  );
+  drawers.leftContextOpen.value = Boolean(selection.keyword.trim());
   const selectedKnowledgeNames = computed(() => {
     const names = selection.knowledgeBlockId
       .split(",")
@@ -225,17 +206,6 @@ export function useExamPage() {
     activeExamId.value = current.id;
   }
 
-  function updateLayoutMode() {
-    compactLayout.value = window.innerWidth < 1024;
-  }
-
-  function closeMobileDrawers() {
-    drawerPinned.value = false;
-    drawerHovered.value = false;
-    rightPinned.value = false;
-    rightHovered.value = false;
-  }
-
   watch(
     () => [
       selection.year,
@@ -253,7 +223,8 @@ export function useExamPage() {
       void load();
     },
   );
-  watch(() => selection.keyword, () => {
+  watch(() => selection.keyword, (keyword) => {
+    drawers.leftContextOpen.value = Boolean(keyword.trim());
     syncFiltersToUrl();
     scheduleKeywordLoad();
   });
@@ -281,8 +252,6 @@ export function useExamPage() {
   );
 
   onMounted(async () => {
-    updateLayoutMode();
-    window.addEventListener("resize", updateLayoutMode, { passive: true });
     window.addEventListener("scroll", updateActiveExam, { passive: true });
     try {
       filters.value = await contentApi.getExamFilters();
@@ -293,7 +262,6 @@ export function useExamPage() {
     }
   });
   onBeforeUnmount(() => {
-    window.removeEventListener("resize", updateLayoutMode);
     window.removeEventListener("scroll", updateActiveExam);
     window.clearTimeout(keywordTimer);
   });
@@ -301,13 +269,8 @@ export function useExamPage() {
   return {
     activeExamId,
     changePage,
-    closeMobileDrawers,
-    compactLayout,
     currentFilterText,
-    drawerColumns,
-    drawerHovered,
-    drawerOpen,
-    drawerPinned,
+    drawers,
     error,
     exams,
     filters,
@@ -316,9 +279,6 @@ export function useExamPage() {
     openSearchPage,
     page,
     resetFilters,
-    rightHovered,
-    rightOpen,
-    rightPinned,
     scrollToExam,
     selection,
     totalPages,

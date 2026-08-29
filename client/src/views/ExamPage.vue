@@ -10,23 +10,23 @@ const examPage = useExamPage()
 <template>
   <div
     class="relative grid min-h-screen overflow-x-clip bg-[#edf1f6] text-[#071225] transition-[grid-template-columns] duration-500 ease-[cubic-bezier(.22,1,.36,1)]"
-    :style="{ gridTemplateColumns: examPage.drawerColumns.value }"
+    :style="{ gridTemplateColumns: examPage.drawers.columns.value }"
   >
     <div
-      v-if="examPage.compactLayout.value && (examPage.drawerOpen.value || examPage.rightOpen.value)"
+      v-if="examPage.drawers.compactLayout.value && (examPage.drawers.leftOpen.value || examPage.drawers.rightOpen.value)"
       class="fixed inset-0 z-20 bg-black/30 backdrop-blur-[2px]"
-      @click="examPage.closeMobileDrawers"
+      @click="examPage.drawers.closeCompactDrawers"
     ></div>
 
     <ExamFilterDrawer
       :current-filter-text="examPage.currentFilterText.value"
       :filters="examPage.filters.value"
       :has-active-filters="examPage.hasActiveFilters.value"
-      :open="examPage.drawerOpen.value"
-      :pinned="examPage.drawerPinned.value"
+      :open="examPage.drawers.leftOpen.value"
+      :pinned="examPage.drawers.leftPinned.value"
       :selection="examPage.selection"
-      @hover="examPage.drawerHovered.value = $event"
-      @pin="examPage.drawerPinned.value = $event"
+      @hover="examPage.drawers.leftHovered.value = $event"
+      @pin="examPage.drawers.leftPinned.value = $event"
       @reset="examPage.resetFilters"
       @search="examPage.openSearchPage"
       @update="examPage.updateSelection"
@@ -45,10 +45,10 @@ const examPage = useExamPage()
       :active-exam-id="examPage.activeExamId.value"
       :current-filter-text="examPage.currentFilterText.value"
       :exams="examPage.exams.value"
-      :open="examPage.rightOpen.value"
-      :pinned="examPage.rightPinned.value"
-      @hover="examPage.rightHovered.value = $event"
-      @pin="examPage.rightPinned.value = $event"
+      :open="examPage.drawers.rightOpen.value"
+      :pinned="examPage.drawers.rightPinned.value"
+      @hover="examPage.drawers.rightHovered.value = $event"
+      @pin="examPage.drawers.rightPinned.value = $event"
       @select="examPage.scrollToExam"
     />
   </div>
