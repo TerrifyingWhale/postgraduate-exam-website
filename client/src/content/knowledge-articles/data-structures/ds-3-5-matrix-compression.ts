@@ -10,12 +10,12 @@ export const ds3_5MatrixCompressionArticle: KnowledgeArticleData = {
         {
           id: 'kb-ds-3-5-1-1',
           type: 'paragraph',
-          text: String.raw`**对称矩阵**满足 $a_{ij} = a_{ji}$，只需存储**下三角 + 主对角线**（或上三角），节省约一半空间。`,
+          text: String.raw`**对称矩阵**满足 $a_{ij} = a_{ji}$，只需存储**下三角(含主对角线)**（或上三角），节省约一半空间。`,
         },
         {
           id: 'kb-ds-3-5-1-4',
           type: 'paragraph',
-          text: String.raw`**对称矩阵**（存下三角 + 主对角线）求下标时数它前面的元素个数：元素 $a_{ij}$（$i \geq j$）前面有完整的 $i-1$ 行，第 1 行 1 个、第 2 行 2 个、…、第 $i-1$ 行 $i-1$ 个，共 $1+2+\cdots+(i-1)$ 个。本行内它前面还有 $j-1$ 个。所以前面一共 $1+2+\cdots+(i-1)+(j-1)$ 个元素；下标从 1 开始时，再加 1 得到存储位置。`,
+          text: String.raw`**对称矩阵**（存下三角(含主对角线)）求下标时数它前面的元素个数：元素 $a_{ij}$（$i \geq j$）前面有完整的 $i-1$ 行，第 1 行 1 个、第 2 行 2 个、…、第 $i-1$ 行 $i-1$ 个，共 $1+2+\cdots+(i-1)$ 个。本行内它前面还有 $j-1$ 个。所以前面一共 $1+2+\cdots+(i-1)+(j-1)$ 个元素；下标从 1 开始时，再加 1 得到存储位置。`,
         },
         {
           id: 'kb-ds-3-5-3-1',
@@ -30,7 +30,7 @@ export const ds3_5MatrixCompressionArticle: KnowledgeArticleData = {
         {
           id: 'kb-ds-3-5-4-1',
           type: 'paragraph',
-          text: String.raw`**例**：一个 $5 \times 5$ 下三角矩阵按行优先存储到一维数组（存主对角线 + 下三角，下标从 1 开始），求元素 $a_{43}$ 的下标。`,
+          text: String.raw`**例**：一个 $5 \times 5$ 下三角矩阵按行优先存储到一维数组（存下三角(含主对角线)，下标从 1 开始），求元素 $a_{43}$ 的下标。`,
         },
         {
           id: 'kb-ds-3-5-4-2',
