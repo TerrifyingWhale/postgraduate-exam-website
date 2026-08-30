@@ -20,6 +20,21 @@ const ALL_CONTRIBUTORS: Contributor[] = [
     platform: "github",
     url: "https://github.com/TerrifyingWhale",
   },
+  {
+    name: "Spr_Aachen",
+    platform: "github",
+    url: "https://github.com/Spr-Aachen",
+  },
+  {
+    name: "Spr_Aachen",
+    platform: "github",
+    url: "https://github.com/Spr-Aachen",
+  },
+   {
+    name: "JustJustGood",
+    platform: "bilibili",
+    url: "https://space.bilibili.com/278414435",
+  },
 ];
 
 /* 共建者区域：数据源来自 @/content/contributors.ts
