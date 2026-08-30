@@ -12,6 +12,6 @@
         class="relative inline-flex h-1.5 w-1.5 rounded-full bg-amber-500"
       ></span>
     </span>
-    BETA v0.0.2
+    BETA v0.0.3
   </div>
 </template>
