@@ -26,11 +26,6 @@ const ALL_CONTRIBUTORS: Contributor[] = [
     url: "https://github.com/Spr-Aachen",
   },
   {
-    name: "Spr_Aachen",
-    platform: "github",
-    url: "https://github.com/Spr-Aachen",
-  },
-   {
     name: "JustJustGood",
     platform: "bilibili",
     url: "https://space.bilibili.com/278414435",
