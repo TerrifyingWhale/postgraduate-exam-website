@@ -61,7 +61,7 @@ export const memory_hierarchyArticle: KnowledgeArticleData = {
         {
           id: 'kb-co-memory-hierarchy-6-1',
           type: 'paragraph',
-          text: '**RAM**（随机存取存储器）：可读可写，按地址随机访问，访问时间与位置无关。\n\n**易失性**：断电后数据丢失。\n\n半导体 RAM 按存储原理分 **SRAM 和 DRAM** 两种，用作主存和 Cache。',
+          text: '**RAM**（随机存取存储器）：可读可写，按地址随机访问，访问时间与位置无关。\n\n**易失性**：断电后数据丢失。\n\n半导体 RAM 按存储原理分 **SRAM 和 DRAM** 两种，用作 Cache 和主存。',
         },
         {
           id: 'kb-co-memory-hierarchy-6-2',
