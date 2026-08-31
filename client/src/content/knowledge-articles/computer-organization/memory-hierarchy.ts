@@ -48,7 +48,6 @@ export const memory_hierarchyArticle: KnowledgeArticleData = {
   <text x="410" y="246" class="layer-name">外存（磁盘 / SSD）</text>
   <text x="410" y="266" class="layer-ex">100 μs ~ 15 ms</text>
 
-  <line x1="410" y1="54" x2="410" y2="276" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="4 4"/>
   <text x="410" y="304" class="note">上一层存储器作为下一层的高速缓存</text>
 </svg>`,
         }
