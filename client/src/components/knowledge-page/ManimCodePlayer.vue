@@ -13,6 +13,14 @@ const sceneHost = ref<HTMLElement | null>(null);
 const sceneRef = shallowRef<Scene | null>(null);
 const isRendering = ref(false);
 let renderToken = 0;
+const rootEl = ref<HTMLElement | null>(null);
+const isFullscreen = ref(false);
+
+const supportsFullscreen = computed(
+  () =>
+    typeof document !== "undefined" &&
+    typeof document.documentElement.requestFullscreen === "function",
+);
 
 const stepCount = computed(() => props.animation.steps.length);
 const progress = computed(() =>
@@ -55,12 +63,13 @@ async function initScene() {
   sceneRef.value?.dispose();
   const config = props.animation.scene;
   sceneRef.value = new Scene(sceneHost.value, {
-    width: config.width,
-    height: config.height,
     frameWidth: config.frameWidth,
     frameHeight: config.frameHeight,
     backgroundColor: config.backgroundColor,
   });
+  // 省略 width/height 让画布跟随容器尺寸自动重绘（全屏切换时无需重建）；
+  // contain 模式保证容器宽高比与画面帧不一致时信箱式留白而非裁剪内容。
+  sceneRef.value.camera.aspectMode = "contain";
   await renderCurrentStep(true);
 }
 
@@ -82,6 +91,20 @@ function reset() {
   void renderCurrentStep(true);
 }
 
+function toggleFullscreen() {
+  const el = rootEl.value;
+  if (!el) return;
+  if (document.fullscreenElement === el) {
+    document.exitFullscreen().catch(() => {});
+  } else {
+    el.requestFullscreen().catch(() => {});
+  }
+}
+
+function syncFullscreenState() {
+  isFullscreen.value = document.fullscreenElement === rootEl.value;
+}
+
 watch(current, () => {
   void renderCurrentStep(true);
 });
@@ -95,10 +118,12 @@ watch(
 );
 
 onMounted(() => {
+  document.addEventListener("fullscreenchange", syncFullscreenState);
   void initScene();
 });
 
 onUnmounted(() => {
+  document.removeEventListener("fullscreenchange", syncFullscreenState);
   sceneRef.value?.dispose();
   sceneRef.value = null;
 });
@@ -106,21 +131,70 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="overflow-hidden rounded-[4px] border border-[#d6dee9] bg-white"
+    ref="rootEl"
+    :class="
+      isFullscreen
+        ? 'flex h-full w-full flex-col bg-white'
+        : 'overflow-hidden rounded-[4px] border border-[#d6dee9] bg-white'
+    "
     :aria-label="animation.ariaLabel"
   >
     <header
-      class="flex items-center justify-between gap-5 border-b border-[#e0e6ee] px-[clamp(14px,2vw,22px)] py-3"
+      class="flex shrink-0 items-center justify-between gap-5 border-b border-[#e0e6ee] px-[clamp(14px,2vw,22px)] py-3"
     >
       <p class="m-0 text-[12px] font-semibold tracking-[.02em] text-slate-500">
         分步动画
       </p>
+      <button
+        v-if="supportsFullscreen"
+        class="flex shrink-0 items-center gap-1.5 text-[12px] font-semibold text-slate-500 transition hover:text-[#071225]"
+        type="button"
+        :aria-label="isFullscreen ? '退出全屏' : '进入全屏'"
+        @click="toggleFullscreen"
+      >
+        <svg
+          v-if="isFullscreen"
+          class="h-3.5 w-3.5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M8 3v3a2 2 0 0 1-2 2H3" />
+          <path d="M21 8h-3a2 2 0 0 1-2-2V3" />
+          <path d="M3 16h3a2 2 0 0 1 2 2v3" />
+          <path d="M16 21v-3a2 2 0 0 1 2-2h3" />
+        </svg>
+        <svg
+          v-else
+          class="h-3.5 w-3.5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M8 3H5a2 2 0 0 0-2 2v3" />
+          <path d="M21 8V5a2 2 0 0 0-2-2h-3" />
+          <path d="M3 16v3a2 2 0 0 0 2 2h3" />
+          <path d="M16 21h3a2 2 0 0 0 2-2v-3" />
+        </svg>
+        {{ isFullscreen ? "退出全屏" : "全屏" }}
+      </button>
     </header>
 
-    <div class="bg-[#f7f8fa] p-2">
+    <div :class="isFullscreen ? 'min-h-0 flex-1' : 'bg-[#f7f8fa] p-2'">
       <div
-        class="relative w-full overflow-hidden border border-[#e0e5eb] bg-white"
-        :style="{ aspectRatio: sceneAspectRatio }"
+        class="relative overflow-hidden"
+        :class="
+          isFullscreen ? 'h-full w-full' : 'w-full border border-[#e0e5eb] bg-white'
+        "
+        :style="isFullscreen ? undefined : { aspectRatio: sceneAspectRatio }"
         role="img"
         :aria-label="animation.ariaLabel"
       >
@@ -131,7 +205,7 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <footer class="border-t border-[#d8e1ec] bg-white">
+    <footer class="shrink-0 border-t border-[#d8e1ec] bg-white">
       <div
         class="flex items-center justify-between gap-4 px-[clamp(14px,2vw,22px)] py-3 max-sm:items-end"
       >
