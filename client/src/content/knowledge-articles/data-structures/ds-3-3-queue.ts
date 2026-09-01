@@ -89,8 +89,8 @@ export const ds3_3QueueArticle: KnowledgeArticleData = {
   <text x="142.5" y="100" class="lab">B</text>
   <text x="177.5" y="100" class="lab">C</text>
 
-  <text x="38" y="140" class="idx">front → 0</text>
-  <text x="108" y="140" class="idx">rear → 2</text>
+  <text x="38" y="140" class="idx">rear → 0</text>
+  <text x="108" y="140" class="idx">front → 2</text>
 
   <line x1="90" y1="168" x2="236" y2="168" stroke="#1e40af" stroke-width="2"/>
   <text x="263" y="172" class="idx">下标 2 → 3 → … 循环</text>
