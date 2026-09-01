@@ -48,7 +48,6 @@ export const memory_hierarchyArticle: KnowledgeArticleData = {
   <text x="410" y="246" class="layer-name">外存（磁盘 / SSD）</text>
   <text x="410" y="266" class="layer-ex">100 μs ~ 15 ms</text>
 
-  <line x1="410" y1="54" x2="410" y2="276" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="4 4"/>
   <text x="410" y="304" class="note">上一层存储器作为下一层的高速缓存</text>
 </svg>`,
         }
@@ -61,7 +60,7 @@ export const memory_hierarchyArticle: KnowledgeArticleData = {
         {
           id: 'kb-co-memory-hierarchy-6-1',
           type: 'paragraph',
-          text: '**RAM**（随机存取存储器）：可读可写，按地址随机访问，访问时间与位置无关。\n\n**易失性**：断电后数据丢失。\n\n半导体 RAM 按存储原理分 **SRAM 和 DRAM** 两种，用作主存和 Cache。',
+          text: '**RAM**（随机存取存储器）：可读可写，按地址随机访问，访问时间与位置无关。\n\n**易失性**：断电后数据丢失。\n\n半导体 RAM 按存储原理分 **SRAM 和 DRAM** 两种，用作 Cache 和主存。',
         },
         {
           id: 'kb-co-memory-hierarchy-6-2',
