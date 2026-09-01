@@ -30,6 +30,11 @@ const ALL_CONTRIBUTORS: Contributor[] = [
     platform: "bilibili",
     url: "https://space.bilibili.com/278414435",
   },
+  {
+    name: "Verthandii",
+    platform: "github",
+    url: "https://github.com/Verthandii",
+  },
 ];
 
 /* 共建者区域：数据源来自 @/content/contributors.ts
