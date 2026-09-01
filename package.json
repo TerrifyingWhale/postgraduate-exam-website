@@ -19,6 +19,8 @@
     "rebuild:exams": "node scripts/rebuild-exam-index.mjs",
     "validate": "npm run validate:content && npm run validate:exams",
     "validate:content": "node scripts/validate_knowledge_content.mjs",
-    "validate:exams": "node scripts/validate_exam_content.mjs"
+    "validate:exams": "node scripts/validate_exam_content.mjs",
+    "test": "npm run validate && npm run test -w client",
+    "test:e2e": "npm run build && npm run test:e2e -w client"
   }
 }
