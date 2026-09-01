@@ -10,20 +10,19 @@ import ContributorsSection from "@/components/home-page/ContributorsSection.vue"
 import { warmSearch } from "@/search/shared";
 
 onMounted(() => {
-  // 首页首屏挂载完成后立刻在后台加载搜索索引；不等待用户悬停或输入。
-  warmSearch();
-
-  // 首屏渲染完后，空闲时预加载知识页和真题页的 chunk
-  // 这两个路由是懒加载，KnowledgePage/ExamPage 都依赖 registry.ts（2.9MB）
-  // 不预加载的话，用户首次点击要等 chunk 下载完才会跳转，看起来"点不动"
-  const prefetchChunks = () => {
+  // 首屏渲染完成后，浏览器空闲时统一预热搜索索引、并预取知识/真题页 chunk。
+  // 不放在 onMounted 立即执行：搜索索引(约1.5MB json) + segmentit 分词器(3.4MB chunk)
+  // 若首屏就下载会抢关键带宽；搜索框已另行在 pointerenter/focus 时触发 warmSearch，
+  // 这里仅作兜底预热，保证点击搜索前索引就已就绪。
+  const warmAndPrefetch = () => {
+    warmSearch();
     import("@/views/KnowledgePage.vue").catch(() => {});
     import("@/views/ExamPage.vue").catch(() => {});
   };
   if ("requestIdleCallback" in window) {
-    (window as any).requestIdleCallback(prefetchChunks, { timeout: 4000 });
+    (window as any).requestIdleCallback(warmAndPrefetch, { timeout: 4000 });
   } else {
-    setTimeout(prefetchChunks, 2500);
+    setTimeout(warmAndPrefetch, 2500);
   }
 });
 </script>

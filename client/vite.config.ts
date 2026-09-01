@@ -11,7 +11,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 /**
  * GitHub Pages 部署约束（项目仓库二级目录）：
  *   - base: '/postgraduate-exam-website/' — 让产物里所有静态资源引用带上二级路径前缀
- *   - sourcemap: true — AGENTS.md 硬约束
+ *   - sourcemap: 默认关闭以压缩产物体积，需调试时传 VITE_SOURCEMAP=true 开启
  *   - vueDevTools() 只在 dev 模式生效（apply: 'serve' 默认），不参与 build，不影响 sourcemap
  *   - build 后自动写入 .nojekyll / 404.html 以及 Pages 合规的 SPA 404 重定向文件
  *   - 构建期同步 src/search/408-terms.txt → dist/search/408-terms.txt（保证唯一数据源）
@@ -63,6 +63,6 @@ export default defineConfig({
     host: '0.0.0.0',
   },
   build: {
-    sourcemap: true,
+    sourcemap: process.env.VITE_SOURCEMAP === 'true',
   },
 })

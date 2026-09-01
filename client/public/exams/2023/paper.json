@@ -1344,7 +1344,7 @@
       "questionType": "choice",
       "subject": "cn",
       "chapterName": "计算机网络体系结构",
-      "stem": "如下图，2 段链路的数据传输速率为 100 Mbps，时延带宽积（即单向传播时延 × 带宽）均为 1000 bit。若 H1 向 H2 发送 1 个大小为 1 MB 的文件，分组长度为 1000 B，则从 H1 开始发送时刻起到 H2 收到文件全部数据时刻止，所需的时间至少是（注：M = 10⁶）（ ）。\n\n![2023 年第 33 题原图](/exams/2023/images/q33-source-1.png)",
+      "stem": "如下图，2 段链路的数据传输速率为 100 Mbps，时延带宽积（即单向传播时延 × 带宽）均为 1000 bit。若 H1 向 H2 发送 1 个大小为 1 MB 的文件，分组长度为 1000 B，则从 H1 开始发送时刻起到 H2 收到文件全部数据时刻止，所需的时间至少是（注：M = 10⁶）（ ）。\n\n![2023 年第 33 题原图](/exams/2023/images/q33-source-1.webp)",
       "options": [
         {
           "key": "A",
@@ -1553,7 +1553,7 @@
       "questionType": "choice",
       "subject": "cn",
       "chapterName": "网络层",
-      "stem": "某网络拓扑如下图所示，其中路由器 R2 实现 NAT 功能。若主机 H 向 Internet 发送一个 IP 分组，则经过 R2 转发后，该 IP 分组的源 IP 地址是（ ）。\n\n![2023 年第 38 题原图](/exams/2023/images/q38-source-1.png)",
+      "stem": "某网络拓扑如下图所示，其中路由器 R2 实现 NAT 功能。若主机 H 向 Internet 发送一个 IP 分组，则经过 R2 转发后，该 IP 分组的源 IP 地址是（ ）。\n\n![2023 年第 38 题原图](/exams/2023/images/q38-source-1.webp)",
       "options": [
         {
           "key": "A",
@@ -1684,7 +1684,7 @@
       "questionType": "comprehensive",
       "subject": "ds",
       "chapterName": "图",
-      "stem": "已知有向图 G 采用邻接矩阵存储，类型定义如下：\n\n```c\ntypedef struct {                    // 图的类型定义\n    int  numVertices, numEdges;     // 图中顶点数和有向边数\n    char VerticesList[MAXV];        // 顶点表，MAXV 为已定义常量\n    int  Edge[MAXV][MAXV];          // 邻接矩阵\n} MGraph;\n```\n\n将图中出度大于入度的顶点称为 K 顶点。例如在题 41 图中，顶点 a 和 b 都是 K 顶点。\n\n![2023 年第 41 题原图](/exams/2023/images/q41-source-1.png)\n\n设计算法 `int printVertices(MGraph G)`：对给定任意非空有向图 G，输出 G 中所有 K 顶点，并返回 K 顶点的个数。要求：\n\n(1) 给出算法的设计思想。\n\n(2) 根据算法思想，写出 C/C++ 描述，并注释。",
+      "stem": "已知有向图 G 采用邻接矩阵存储，类型定义如下：\n\n```c\ntypedef struct {                    // 图的类型定义\n    int  numVertices, numEdges;     // 图中顶点数和有向边数\n    char VerticesList[MAXV];        // 顶点表，MAXV 为已定义常量\n    int  Edge[MAXV][MAXV];          // 邻接矩阵\n} MGraph;\n```\n\n将图中出度大于入度的顶点称为 K 顶点。例如在题 41 图中，顶点 a 和 b 都是 K 顶点。\n\n![2023 年第 41 题原图](/exams/2023/images/q41-source-1.webp)\n\n设计算法 `int printVertices(MGraph G)`：对给定任意非空有向图 G，输出 G 中所有 K 顶点，并返回 K 顶点的个数。要求：\n\n(1) 给出算法的设计思想。\n\n(2) 根据算法思想，写出 C/C++ 描述，并注释。",
       "options": [],
       "answer": "",
       "difficulty": 3,
@@ -1876,7 +1876,7 @@
       "questionType": "comprehensive",
       "subject": "os",
       "chapterName": "进程与线程",
-      "stem": "现要求学生使用 swap 指令和布尔型变量 lock，实现临界区互斥。lock 为线程间共享的变量。lock 的值为 TRUE 时线程不能进入临界区，为 FALSE 时线程能进入临界区。某同学编写的实现临界区互斥的伪代码如题 45（a）图所示。\n\n![题 45（a）图和题 45（b）图](/exams/2023/images/q45-source-1.png)\n\n请回答下列问题。\n\n（1）题 45（a）图的伪代码中哪些语句存在错误？将其改为正确的语句（不增加语句条数）。\n\n（2）题 45（b）图给出了两个变量值的函数 newSwap() 的代码，是否可以用函数调用语句 `newSwap(&key, &lock)` 代替指令 `swap key, lock` 以实现临界区的互斥？为什么？",
+      "stem": "现要求学生使用 swap 指令和布尔型变量 lock，实现临界区互斥。lock 为线程间共享的变量。lock 的值为 TRUE 时线程不能进入临界区，为 FALSE 时线程能进入临界区。某同学编写的实现临界区互斥的伪代码如题 45（a）图所示。\n\n![题 45（a）图和题 45（b）图](/exams/2023/images/q45-source-1.webp)\n\n请回答下列问题。\n\n（1）题 45（a）图的伪代码中哪些语句存在错误？将其改为正确的语句（不增加语句条数）。\n\n（2）题 45（b）图给出了两个变量值的函数 newSwap() 的代码，是否可以用函数调用语句 `newSwap(&key, &lock)` 代替指令 `swap key, lock` 以实现临界区的互斥？为什么？",
       "options": [],
       "answer": "",
       "difficulty": 3,
@@ -1961,7 +1961,7 @@
       "questionType": "comprehensive",
       "subject": "cn",
       "chapterName": "传输层",
-      "stem": "如图，主机 H 登录到 FTP 服务器后，向服务器上传一个大小为 18000 B 的文件 F，假设 H 传输 F 建立数据连接时，选择的初始序号为 100，MSS = 1000 B，拥塞控制的初始阈值 ssthresh = 4 MSS，RTT = 10 ms，忽略 TCP 的传输时延，在 F 的传送过程中，H 以 MSS 段向服务器发送数据，且始终没有错误、丢包和乱序。\n\n![2023 年第 47 题原图](/exams/2023/images/q47-source-1.png)\n\n(1) FTP 的控制连接是持久的还是非持久的？FTP 的数据连接是持久的还是非持久的？H 登录服务器时，建立的 FTP 连接是数据连接还是控制连接？\n\n(2) H 通过数据连接发送 F 时，F 的第一个字节序号是多少？在断开数据连接的过程中，FTP 发送的第二次挥手的 ACK 序号是多少？\n\n(3) F 发送过程中，当 H 收到确认序号为 2101 的确认段时，H 的拥塞窗口调整为多少？收到确认序号为 7101 的确认段时，H 的拥塞窗口调整为多少？\n\n(4) H 从请求建立数据连接开始，到确认 F 已被服务器全部接收为止，至少要多长时间？期间应用层数据平均发送速率是多少？",
+      "stem": "如图，主机 H 登录到 FTP 服务器后，向服务器上传一个大小为 18000 B 的文件 F，假设 H 传输 F 建立数据连接时，选择的初始序号为 100，MSS = 1000 B，拥塞控制的初始阈值 ssthresh = 4 MSS，RTT = 10 ms，忽略 TCP 的传输时延，在 F 的传送过程中，H 以 MSS 段向服务器发送数据，且始终没有错误、丢包和乱序。\n\n![2023 年第 47 题原图](/exams/2023/images/q47-source-1.webp)\n\n(1) FTP 的控制连接是持久的还是非持久的？FTP 的数据连接是持久的还是非持久的？H 登录服务器时，建立的 FTP 连接是数据连接还是控制连接？\n\n(2) H 通过数据连接发送 F 时，F 的第一个字节序号是多少？在断开数据连接的过程中，FTP 发送的第二次挥手的 ACK 序号是多少？\n\n(3) F 发送过程中，当 H 收到确认序号为 2101 的确认段时，H 的拥塞窗口调整为多少？收到确认序号为 7101 的确认段时，H 的拥塞窗口调整为多少？\n\n(4) H 从请求建立数据连接开始，到确认 F 已被服务器全部接收为止，至少要多长时间？期间应用层数据平均发送速率是多少？",
       "options": [],
       "answer": "",
       "difficulty": 4,

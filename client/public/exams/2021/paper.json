@@ -216,7 +216,7 @@
       "questionType": "choice",
       "subject": "ds",
       "chapterName": "查找",
-      "stem": "给定平衡二叉树如下图所示，插入关键字 23 后，根中的关键字是（ ）。\n\n![2021 年第 6 题原图](/exams/2021/images/q06-source-1.png)",
+      "stem": "给定平衡二叉树如下图所示，插入关键字 23 后，根中的关键字是（ ）。\n\n![2021 年第 6 题原图](/exams/2021/images/q06-source-1.webp)",
       "options": [
         {
           "key": "A",
@@ -258,7 +258,7 @@
       "questionType": "choice",
       "subject": "ds",
       "chapterName": "图",
-      "stem": "给定如下有向图，该图的拓扑有序序列的个数是( )。\n\n![2021 年第 7 题原图](/exams/2021/images/q07-source-1.png)",
+      "stem": "给定如下有向图，该图的拓扑有序序列的个数是( )。\n\n![2021 年第 7 题原图](/exams/2021/images/q07-source-1.webp)",
       "options": [
         {
           "key": "A",
@@ -299,7 +299,7 @@
       "questionType": "choice",
       "subject": "ds",
       "chapterName": "图",
-      "stem": "使用 Dijkstra 算法求下图中从顶点 1 到其余各顶点的最短路径，将当前找到的从顶点 1 到顶点 2, 3, 4, 5 的最短路径长保存在数组 dist 中，求出第二条最短路径后，dist 中的内容更新为（ ）。\n\n![2021 年第 8 题原图](/exams/2021/images/q08-source-1.png)",
+      "stem": "使用 Dijkstra 算法求下图中从顶点 1 到其余各顶点的最短路径，将当前找到的从顶点 1 到顶点 2, 3, 4, 5 的最短路径长保存在数组 dist 中，求出第二条最短路径后，dist 中的内容更新为（ ）。\n\n![2021 年第 8 题原图](/exams/2021/images/q08-source-1.webp)",
       "options": [
         {
           "key": "A",
@@ -1388,7 +1388,7 @@
       "questionType": "choice",
       "subject": "cn",
       "chapterName": "物理层",
-      "stem": "若下图为一段差分曼彻斯特编码信号波形，则其编码的二进制位串是（ ）。\n\n![2021 年第 34 题原图](/exams/2021/images/q34-source-1.png)",
+      "stem": "若下图为一段差分曼彻斯特编码信号波形，则其编码的二进制位串是（ ）。\n\n![2021 年第 34 题原图](/exams/2021/images/q34-source-1.webp)",
       "options": [
         {
           "key": "A",
@@ -1948,7 +1948,7 @@
       "questionType": "comprehensive",
       "subject": "cn",
       "chapterName": "应用层",
-      "stem": "某网络拓扑如题 47 图所示，以太网交换机 S 通过路由器 R 与 Internet 互联。路由器部分接口、本地域名服务器、H1、H2 的 IP 地址和 MAC 地址如图中所示。在 $t_0$ 时刻 H1 的 ARP 表和 S 的交换表均为空，H1 在此刻利用浏览器通过域名 `www.abc.com` 请求访问 Web 服务器，在 $t_1$ 时刻（$t_1 > t_0$）S 第一次收到了封装 HTTP 请求报文的以太网帧，假设从 $t_0$ 到 $t_1$ 期间网络未发生任何与此次 Web 访问无关的网络通信。\n\n![2021 年第 47 题原图](/exams/2021/images/q47-source-1.png)\n\n请回答下列问题。\n\n(1) 从 $t_0$ 到 $t_1$ 期间，H1 除了 HTTP 之外还运行了哪个应用层协议？从应用层到数据链路层，该应用层协议报文是通过哪些协议进行逐层封装的？\n\n(2) 若 S 的交换表结构为 〈MAC 地址, 端口〉，则 $t_1$ 时刻 S 交换表的内容是什么？\n\n(3) 从 $t_0$ 到 $t_1$ 期间，H2 至少会接收到几个与此次 Web 访问相关的帧？接收到的是什么帧？帧的目的 MAC 地址是什么？",
+      "stem": "某网络拓扑如题 47 图所示，以太网交换机 S 通过路由器 R 与 Internet 互联。路由器部分接口、本地域名服务器、H1、H2 的 IP 地址和 MAC 地址如图中所示。在 $t_0$ 时刻 H1 的 ARP 表和 S 的交换表均为空，H1 在此刻利用浏览器通过域名 `www.abc.com` 请求访问 Web 服务器，在 $t_1$ 时刻（$t_1 > t_0$）S 第一次收到了封装 HTTP 请求报文的以太网帧，假设从 $t_0$ 到 $t_1$ 期间网络未发生任何与此次 Web 访问无关的网络通信。\n\n![2021 年第 47 题原图](/exams/2021/images/q47-source-1.webp)\n\n请回答下列问题。\n\n(1) 从 $t_0$ 到 $t_1$ 期间，H1 除了 HTTP 之外还运行了哪个应用层协议？从应用层到数据链路层，该应用层协议报文是通过哪些协议进行逐层封装的？\n\n(2) 若 S 的交换表结构为 〈MAC 地址, 端口〉，则 $t_1$ 时刻 S 交换表的内容是什么？\n\n(3) 从 $t_0$ 到 $t_1$ 期间，H2 至少会接收到几个与此次 Web 访问相关的帧？接收到的是什么帧？帧的目的 MAC 地址是什么？",
       "options": [],
       "answer": "",
       "difficulty": 4,
