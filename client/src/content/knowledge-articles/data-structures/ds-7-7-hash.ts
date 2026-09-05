@@ -132,7 +132,7 @@ export const ds7_7HashArticle: KnowledgeArticleData = {
   </g>
 
   <g>
-    <rect x="130" y="48" width="46" height="30" rx="5" fill="#dbeafe"/><text x="153" y="68" class="val">22</text>
+    <rect x="130" y="48" width="46" height="30" rx="5" fill="#dbeafe"/><text x="153" y="68" class="val">23</text>
     <rect x="130" y="94" width="46" height="30" rx="5" fill="#dbeafe"/><text x="153" y="114" class="val">15</text>
     <rect x="240" y="94" width="46" height="30" rx="5" fill="#dbeafe"/><text x="263" y="114" class="val">43</text>
   </g>
@@ -140,7 +140,7 @@ export const ds7_7HashArticle: KnowledgeArticleData = {
   <line x1="86" y1="63" x2="128" y2="63" class="link"/>
   <line x1="86" y1="109" x2="128" y2="109" class="link"/>
   <line x1="176" y1="109" x2="238" y2="109" class="link"/>
-  <text x="240" y="180" class="addr" font-size="13" fill="#475569" text-anchor="middle">22、43、15 的 H 值都是 1，同一个链表</text>
+  <text x="240" y="180" class="addr" font-size="13" fill="#475569" text-anchor="middle">43、15 的 H 值都是 1，同一个链表</text>
 </svg>`,
         },
         {
