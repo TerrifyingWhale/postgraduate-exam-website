@@ -35,6 +35,11 @@ const ALL_CONTRIBUTORS: Contributor[] = [
     platform: "github",
     url: "https://github.com/Verthandii",
   },
+  {
+    name: "panko12138",
+    platform: "github",
+    url: "https://github.com/panko12138",
+  },
 ];
 
 /* 共建者区域：数据源来自 @/content/contributors.ts
