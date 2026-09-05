@@ -1,5 +1,5 @@
 import type { KnowledgeArticleData } from '@/content/knowledge-articles/types'
-import hddStructure from '@/assets/computer-organization/external-storage/hdd-structure.png'
+import hddStructure from '@/assets/computer-organization/external-storage/hdd-structure.webp'
 
 export const coExternalHddArticle: KnowledgeArticleData = {
   pointId: 'co-external-hdd',
@@ -28,7 +28,7 @@ export const coExternalHddArticle: KnowledgeArticleData = {
           src: hddStructure,
           alt: '机械硬盘结构：盘片、主轴、磁道、扇区与 CHS 地址（柱面号/磁头号/扇区号）',
           sourceImport: {
-            path: '@/assets/computer-organization/external-storage/hdd-structure.png',
+            path: '@/assets/computer-organization/external-storage/hdd-structure.webp',
             localName: 'hddStructure',
             kind: 'default',
           },

@@ -1,9 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800;900&display=swap');
-@layer theme, base, element-plus, components, utilities;
+@layer theme, base, components, utilities;
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/preflight.css" layer(base);
-@import "element-plus/dist/index.css" layer(element-plus);
-@import "./element-plus.css" layer(components);
 @import "tailwindcss/utilities.css" layer(utilities) source("../");
 
 @theme {

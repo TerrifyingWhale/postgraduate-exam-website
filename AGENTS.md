@@ -11,11 +11,11 @@
 
 - **框架**：Vue 3.5 + TypeScript 5.7 + Vite 8
 - **路由**：vue-router 4（history 模式）
-- **UI**：Tailwind CSS 4 + Element Plus 2
+- **UI**：Tailwind CSS 4
 - **数学**：KaTeX
 - **Markdown**：marked + dompurify
 - **动画**：manim-web（代码动画）
-- **搜索**：flexsearch + segmentit（中文分词）+ 自研评分
+- **搜索**：minisearch + segmentit（中文分词）+ 自研评分
 - **包管理**：npm workspaces，根目录是 orchestrator，`client/` 是实际前端
 
 ## 常用命令（在根目录执行）
@@ -129,7 +129,7 @@ Book
 ## 硬约束（勿违反）
 
 - **路由模式**：必须是 `createWebHashHistory()`（GitHub Pages 二级目录下 history 模式刷新会 404）。
-- **Vite 必须生成 sourcemap**：`build.sourcemap: true`。`vite-plugin-vue-devtools` 已恢复，仅在 dev 模式生效（`apply: 'serve'` 默认），不参与 build，不影响 sourcemap。
+- **Vite sourcemap（默认关闭）**：默认不生成 sourcemap（压缩产物体积，约省 16MB）；需调试时传 `VITE_SOURCEMAP=true npm run build -w client`。`vite-plugin-vue-devtools` 已恢复，仅在 dev 模式生效（`apply: 'serve'` 默认），不参与 build，不影响 sourcemap。
 - **Vite `base`**：默认 `/`（本机 dev 直接打开 `http://localhost:5173/`）；GitHub Pages 二级目录部署时由 deploy.yml 传 `VITE_BASE_PATH=/postgraduate-exam-website/`；自定义域名时改为 `VITE_BASE_PATH=/` 自行传即可。`index.html` 里所有 `public/` 下的静态资源（favicon、manifest 等）引用必须用 Vite 的 `%BASE_URL%` 占位符，不能写死绝对路径。
 - **`launch.json`** 使用简化 `sourceMapPathOverrides`，只保留 `"vite:///src/*": "${workspaceFolder}/client/src/*"`。
 - **搜索输入**：最多 20 字符；搜索结果 `topK = 8`。

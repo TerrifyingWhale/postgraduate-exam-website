@@ -258,7 +258,7 @@
       "questionType": "choice",
       "subject": "ds",
       "chapterName": "图",
-      "stem": "已知无向图 $G$ 如下图所示，使用克鲁斯卡尔（Kruskal）算法求图 $G$ 的最小生成树，加入到最小生成树中的边依次是（ ）。\n\n![2020 年第 7 题原图](/exams/2020/images/q07-source-1.png)",
+      "stem": "已知无向图 $G$ 如下图所示，使用克鲁斯卡尔（Kruskal）算法求图 $G$ 的最小生成树，加入到最小生成树中的边依次是（ ）。\n\n![2020 年第 7 题原图](/exams/2020/images/q07-source-1.webp)",
       "options": [
         {
           "key": "A",
@@ -1355,7 +1355,7 @@
       "questionType": "choice",
       "subject": "cn",
       "chapterName": "计算机网络体系结构",
-      "stem": "下图描述的协议要素是（ ）。\n\n![2020 年第 33 题原图](/exams/2020/images/q33-source-1.png)\n\n题选要素：\n\nⅠ. 语法\n\nⅡ. 语义\n\nⅢ. 时序",
+      "stem": "下图描述的协议要素是（ ）。\n\n![2020 年第 33 题原图](/exams/2020/images/q33-source-1.webp)\n\n题选要素：\n\nⅠ. 语法\n\nⅡ. 语义\n\nⅢ. 时序",
       "options": [
         {
           "key": "A",
@@ -1437,7 +1437,7 @@
       "questionType": "choice",
       "subject": "cn",
       "chapterName": "数据链路层",
-      "stem": "下图所示的网络冲突域和广播域的个数分别是（ ）。\n\n![2020 年第 35 题原图](/exams/2020/images/q35-source-1.png)",
+      "stem": "下图所示的网络冲突域和广播域的个数分别是（ ）。\n\n![2020 年第 35 题原图](/exams/2020/images/q35-source-1.webp)",
       "options": [
         {
           "key": "A",
@@ -1522,7 +1522,7 @@
       "questionType": "choice",
       "subject": "cn",
       "chapterName": "数据链路层",
-      "stem": "某 IEEE 802.11 无线局域网中主机 H 与 AP 之间发送或接收 CSMA/CA 帧的过程如下图所示，在 H 或 AP 发送帧前所等待的帧间间隔时间（IFS）中最长的是（ ）。\n\n![2020 年第 37 题原图](/exams/2020/images/q37-source-1.png)",
+      "stem": "某 IEEE 802.11 无线局域网中主机 H 与 AP 之间发送或接收 CSMA/CA 帧的过程如下图所示，在 H 或 AP 发送帧前所等待的帧间间隔时间（IFS）中最长的是（ ）。\n\n![2020 年第 37 题原图](/exams/2020/images/q37-source-1.webp)",
       "options": [
         {
           "key": "A",
@@ -1648,7 +1648,7 @@
       "questionType": "choice",
       "subject": "cn",
       "chapterName": "应用层",
-      "stem": "假设下图所示网络中的本地域名服务器只提供递归查询服务，其他域名的服务器均只提供迭代查询服务；局域网内主机访问 Internet 上各服务器的往返时间（RTT）均为 10 ms，忽略其他各种时延。若主机 H 通过超链接 `http://www.abc.com/index.html` 请求浏览纯文本 Web 页 index.html，则从点击超链接开始到浏览器接收到 index.html 页面为止，所需最短、最长时间分别是（ ）。\n\n![2020 年第 40 题原图](/exams/2020/images/q40-source-1.png)",
+      "stem": "假设下图所示网络中的本地域名服务器只提供递归查询服务，其他域名的服务器均只提供迭代查询服务；局域网内主机访问 Internet 上各服务器的往返时间（RTT）均为 10 ms，忽略其他各种时延。若主机 H 通过超链接 `http://www.abc.com/index.html` 请求浏览纯文本 Web 页 index.html，则从点击超链接开始到浏览器接收到 index.html 页面为止，所需最短、最长时间分别是（ ）。\n\n![2020 年第 40 题原图](/exams/2020/images/q40-source-1.webp)",
       "options": [
         {
           "key": "A",
@@ -1954,7 +1954,7 @@
       "questionType": "comprehensive",
       "subject": "cn",
       "chapterName": "网络层",
-      "stem": "某校园网有两个局域网，通过路由器 R1、R2 和 R3 互联后接入 Internet，S1 和 S2 为以太网交换机，局域网采用静态 IP 地址配置，路由器部分接口以及各主机的 IP 地址如图所示：\n\n![2020 年第 47 题原图](/exams/2020/images/q47-source-1.png)\n\n请回答下列问题：\n\n(1) 为使 H2 和 H3 能够访问 Web 服务器（使用默认端口号），需要进行什么配置？\n\n(2) 若 H2 主动访问 Web 服务器时，将 HTTP 请求报文封装到 IP 数据报 P 中发送，则 H2 发送 P 的源 IP 地址和目的 IP 地址分别是什么？经过 R3 转发后，P 的源 IP 地址和目的 IP 地址分别是什么？经过 R2 转发后，P 的源 IP 地址和目的 IP 地址分别是什么？",
+      "stem": "某校园网有两个局域网，通过路由器 R1、R2 和 R3 互联后接入 Internet，S1 和 S2 为以太网交换机，局域网采用静态 IP 地址配置，路由器部分接口以及各主机的 IP 地址如图所示：\n\n![2020 年第 47 题原图](/exams/2020/images/q47-source-1.webp)\n\n请回答下列问题：\n\n(1) 为使 H2 和 H3 能够访问 Web 服务器（使用默认端口号），需要进行什么配置？\n\n(2) 若 H2 主动访问 Web 服务器时，将 HTTP 请求报文封装到 IP 数据报 P 中发送，则 H2 发送 P 的源 IP 地址和目的 IP 地址分别是什么？经过 R3 转发后，P 的源 IP 地址和目的 IP 地址分别是什么？经过 R2 转发后，P 的源 IP 地址和目的 IP 地址分别是什么？",
       "options": [],
       "answer": "",
       "difficulty": 4,
