@@ -111,18 +111,30 @@ const jitiInstance = createJiti(CLIENT_ROOT, {
 });
 
 const knowledgeTreeMod = jitiInstance("./src/content/knowledge-tree.ts");
-const registryMod = jitiInstance(
-  "./src/content/knowledge-articles/registry.ts",
-);
 const books = knowledgeTreeMod.knowledgeBooks || [];
 const allKnowledgePoints =
   knowledgeTreeMod.allKnowledgePoints ||
   books.flatMap((b) =>
     b.chapters.flatMap((ch) => ch.sections.flatMap((s) => s.points || [])),
   );
-// registry.ts 把 knowledgeArticleRegistry 作为本地 const，不 export；
-// 但它导出了 getKnowledgeArticleRegistration(pointId) 逐个查询
-const getRegistration = registryMod.getKnowledgeArticleRegistration;
+// 知识正文从「按 book 拆分的模块」读取（构建期无需关心浏览器分包），
+// 同时记录每篇文章拥有者，供生成运行时轻量索引使用。
+const BOOK_MODULE_PATHS = [
+  "./src/content/knowledge-articles/books/computer-network.ts",
+  "./src/content/knowledge-articles/books/data-structures.ts",
+  "./src/content/knowledge-articles/books/computer-organization.ts",
+  "./src/content/knowledge-articles/books/operating-systems.ts",
+];
+const articleMap = {}; // pointId -> KnowledgeArticleData
+const bookOfPoint = {}; // pointId -> 拥有该文章正文的 bookId
+for (const rel of BOOK_MODULE_PATHS) {
+  const bookMod = jitiInstance(rel);
+  for (const [pointId, article] of Object.entries(bookMod.articlesByPoint || {})) {
+    articleMap[pointId] = article;
+    bookOfPoint[pointId] = bookMod.bookId || "";
+  }
+}
+const getArticle = (pointId) => articleMap[pointId];
 
 /* ========== 3. 知识树标题索引 ========== */
 const bookIdOfSection = new Map();
@@ -241,8 +253,7 @@ const knowledgeDocs = []; // 子点级文档（含各层标题字段），docIdx
 const seenSubpointDocs = new Set(); // 跨书/跨节重复注册的 subpoint 去重
 let skipped = 0;
 for (const point of allKnowledgePoints) {
-  const registration = getRegistration(point.id);
-  const article = registration?.article;
+  const article = getArticle(point.id);
   if (!article || !Array.isArray(article.subpoints)) {
     skipped++;
     continue;
@@ -462,6 +473,43 @@ for (const section of sectionDocs) {
     });
   });
 }
+
+/* ========== 6.7 生成运行时知识块反查索引（按 book 拆包后，注册表不再带正文） ========== */
+// 轻量同步元数据：subpointLocationByBlockId / blockIdsOfPoint / bookOfPoint，
+// 供真题页、筛选器离线同步使用；知识正文本身改为按 book 懒加载。
+const subpointLocationByBlockId = {};
+const blockIdsOfPoint = {};
+for (const [pointId, article] of Object.entries(articleMap)) {
+  const blockIds = [];
+  for (const sp of article.subpoints || []) {
+    for (const block of sp.blocks || []) {
+      if (!block || !block.id) continue;
+      blockIds.push(block.id);
+      subpointLocationByBlockId[block.id] = {
+        pointId,
+        subpointId: sp.id,
+        subpointTitle: sp.title,
+      };
+    }
+  }
+  if (blockIds.length) blockIdsOfPoint[pointId] = blockIds;
+}
+const blockIndexPath = path.join(
+  CLIENT_ROOT,
+  "src/content/knowledge-articles/block-index.generated.ts",
+);
+writeFileSync(
+  blockIndexPath,
+  "// 本文件由 scripts/build-search-index.cjs 自动生成，请勿手动修改。\n" +
+    "export type GeneratedBlockLocation = { pointId: string; subpointId: string; subpointTitle: string };\n\n" +
+    "/** 由已知 blockId 反查它所属的 subpoint（轻量同步元数据）。 */\n" +
+    `export const subpointLocationByBlockId: Record<string, GeneratedBlockLocation> = ${JSON.stringify(subpointLocationByBlockId)};\n\n` +
+    "/** pointId → 该知识点正文的全部 kb-* block ID（构建真题筛选器用）。 */\n" +
+    `export const blockIdsOfPoint: Record<string, string[]> = ${JSON.stringify(blockIdsOfPoint)};\n\n` +
+    "/** pointId → 其正文所属教材 bookId（知识页按 book 懒加载定位）。 */\n" +
+    `export const bookOfPoint: Record<string, string> = ${JSON.stringify(bookOfPoint)};\n`,
+  "utf-8",
+);
 
 /* ========== 7. 输出 ========== */
 const OUT_DIR = path.join(CLIENT_ROOT, "public", "search");

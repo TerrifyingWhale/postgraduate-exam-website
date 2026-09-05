@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, defineAsyncComponent } from "vue";
 import katex from "katex";
 import KnowledgeMarkdown from "./KnowledgeMarkdown.vue";
-import ManimCodePlayer from "./ManimCodePlayer.vue";
+const ManimCodePlayer = defineAsyncComponent(() => import("./ManimCodePlayer.vue"));
 import type { KnowledgeArticleData } from "@/content/knowledge-articles/types";
 import type { ExamKnowledgeLink } from "@/types";
 

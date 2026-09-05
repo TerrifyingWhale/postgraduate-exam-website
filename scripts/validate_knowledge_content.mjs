@@ -52,7 +52,13 @@ for (const block of bookBlocks) {
 }
 
 const articleRecords = collectArticleFiles(articlesRoot)
-  .filter((filePath) => path.relative(articlesRoot, filePath).includes(path.sep))
+  .filter((filePath) => {
+    const rel = path.relative(articlesRoot, filePath)
+    // 只扫「知识点正文」文件：跳过 articlesRoot 根目录生成物，以及 books/ 按教材分包模块
+    if (!rel.includes(path.sep)) return false
+    if (rel.startsWith('books' + path.sep)) return false
+    return true
+  })
   .map((filePath) => {
   const source = fs.readFileSync(filePath, 'utf8')
   const pointIds = collectMatches(source, /\bpointId:\s*['"]((?:kp|ds|co|os)-(?!chapter|section)[a-z0-9]+(?:-[a-z0-9]+)*)['"]/g)
@@ -75,21 +81,38 @@ const articleBlockIds = collectArticleFiles(articlesRoot)
 
 assertUnique(articleBlockIds, 'Knowledge Block ID')
 
-const registrySource = fs.readFileSync(registryPath, 'utf8')
-const registeredExports = new Set(
-  collectMatches(registrySource, /\[([A-Za-z_$][\w$]*)\.pointId\]\s*:/g),
-)
-const importedExports = new Set(
-  collectMatches(registrySource, /import\s*\{\s*([A-Za-z_$][\w$]*)\s*\}\s*from\s*['"]/g),
-)
+const booksDir = path.join(articlesRoot, 'books')
+// 导出名 → pointId（还原注册键 `${ArticleVar}.pointId` 对应的真实 pointId）
+const exportNameToPointId = new Map(articleRecords.map((record) => [record.exportName, record.pointId]))
+const bookSources = fs.readdirSync(booksDir, { withFileTypes: true })
+  .filter((entry) => entry.isFile() && entry.name.endsWith('.ts'))
+  .map((entry) => ({ file: path.join(booksDir, entry.name), source: fs.readFileSync(path.join(booksDir, entry.name), 'utf8') }))
+const registeredExports = new Set()
+const importedExports = new Set()
+// pointId → 所属 bookId（跨 book 全局唯一，用于防复用点归属错配）
+const pointIdToBook = new Map()
+for (const { source, file } of bookSources) {
+  const bookId = path.basename(file, '.ts')
+  for (const m of collectMatches(source, /\[([A-Za-z_$][\w$]*)\.pointId\]\s*:/g)) {
+    registeredExports.add(m)
+    const pointId = exportNameToPointId.get(m)
+    if (pointId) {
+      if (pointIdToBook.has(pointId)) {
+        throw new Error(`KnowledgePoint ${pointId} 在多个 book 模块重复注册：${pointIdToBook.get(pointId)} 与 ${bookId}`)
+      }
+      pointIdToBook.set(pointId, bookId)
+    }
+  }
+  for (const m of collectMatches(source, /import\s*\{\s*([A-Za-z_$][\w$]*)\s*\}\s*from\s*['"]/g)) importedExports.add(m)
+}
 
 const articleByPointId = new Map(articleRecords.map((record) => [record.pointId, record]))
 
 for (const pointId of treePointIds) {
   const article = articleByPointId.get(pointId)
   if (!article) throw new Error(`KnowledgePoint ${pointId} 缺少独立 KnowledgeArticleData 文件`)
-  if (!importedExports.has(article.exportName)) throw new Error(`${article.exportName} 未被 registry.ts 导入`)
-  if (!registeredExports.has(article.exportName)) throw new Error(`${article.exportName} 未在 registry.ts 注册`)
+  if (!importedExports.has(article.exportName)) throw new Error(`${article.exportName} 未被 books/ 模块导入`)
+  if (!registeredExports.has(article.exportName)) throw new Error(`${article.exportName} 未在 books/ 模块注册`)
 }
 
 for (const article of articleRecords) {

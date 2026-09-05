@@ -1,7 +1,7 @@
 import type { Exam, ExamFilters, ExamFilterBookChapter, ExamFilterBookChapterSection, ExamKnowledgeLink, ExamListResponse, ExamQuestionType, ExamSubject } from '@/types'
 import { withBase } from '@/search/shared'
 import { knowledgeBooks } from '@/content/knowledge-tree'
-import { getKnowledgeArticleRegistration } from '@/content/knowledge-articles/registry'
+import { blockIdsOfPoint } from '@/content/knowledge-articles/registry'
 
 /**
  * 真题静态数据仓库。所有真题数据从 client/public/exams/ 读取（纯静态）。
@@ -108,7 +108,7 @@ export type ExamFilterQuery = {
 }
 
 /** 从 index 里过滤得到题目 id 列表（轻量），再按需加载 paper 补全 */
-async function queryIndexIds(query: ExamFilterQuery): Promise<ExamIndexItem[]> {
+export async function queryIndexIds(query: ExamFilterQuery): Promise<ExamIndexItem[]> {
   const index = await getExamIndex()
   let rows = index.slice()
 
@@ -141,10 +141,11 @@ async function queryIndexIds(query: ExamFilterQuery): Promise<ExamIndexItem[]> {
     )
   }
 
-  // 知识块筛选
-  const kbIds =
-    (query.knowledgeBlockIds ? query.knowledgeBlockIds.split(',').map((s) => s.trim()).filter(Boolean) : [])
-    || (query.knowledgeBlockId ? [query.knowledgeBlockId] : [])
+  // 知识块筛选：合并 knowledgeBlockIds（复数，逗号分隔）与 knowledgeBlockId（单值）
+  const kbIds = [
+    ...(query.knowledgeBlockIds ? query.knowledgeBlockIds.split(',').map((s) => s.trim()).filter(Boolean) : []),
+    ...(query.knowledgeBlockId ? [query.knowledgeBlockId] : []),
+  ]
   if (kbIds.length) rows = rows.filter((x) => x.knowledgeBlockIds.some((b) => kbIds.includes(b)))
 
   // 难度/分值/资源需完整数据，这里先用 index 无法承担，留空由调用方补充（或用 paper 补全字段）
@@ -253,17 +254,11 @@ export async function getAdjacentQuestion(
 /* ---------- 筛选器（filters） ---------- */
 
 /**
- * 从知识树 pointId 出发，收集该 point 对应文章里全部 kb-* block ID。
+ * 从知识树 pointId 出发，返回该 point 对应文章里全部 kb-* block ID（轻量同步索引）。
  * 没注册文章的点返回空数组。
  */
 function collectBlockIdsOfPoint(pointId: string): string[] {
-  const reg = getKnowledgeArticleRegistration(pointId)
-  if (!reg) return []
-  const ids: string[] = []
-  for (const subpoint of reg.article.subpoints) {
-    for (const block of subpoint.blocks) ids.push(block.id)
-  }
-  return ids
+  return blockIdsOfPoint[pointId] ?? []
 }
 
 /**

@@ -1,9 +1,30 @@
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { content, knowledgeBooks } from "@/content";
-import { resolveKnowledgeArticle } from "@/content/knowledge-articles/registry";
-import type { Book, ExamKnowledgeLink, Section } from "@/types";
+import { getArticleForPoint } from "@/content/knowledge-articles/registry";
+import type { KnowledgeArticleData } from "@/content/knowledge-articles/types";
+import type { Book, ExamKnowledgeLink, KnowledgePoint, Section } from "@/types";
 import type { SectionArticleEntry } from "./pageTypes";
+
+/** 未登记独立文章的 point 的回退文章：仅展示知识点摘要。 */
+function buildFallbackArticle(point: KnowledgePoint): KnowledgeArticleData {
+  return {
+    pointId: point.id,
+    subpoints: [
+      {
+        id: `${point.id}-overview`,
+        title: "核心概念",
+        blocks: [
+          {
+            id: `kb-${point.id}-overview-1`,
+            type: "paragraph",
+            text: point.summary,
+          },
+        ],
+      },
+    ],
+  };
+}
 
 export function useKnowledgeReader() {
   const route = useRoute();
@@ -99,10 +120,14 @@ export function useKnowledgeReader() {
         return;
       }
 
-      const nextEntries = nextSection.points.map((point) => ({
-        point,
-        article: resolveKnowledgeArticle(point),
-      }));
+      const nextEntries = await Promise.all(
+        nextSection.points.map(async (point) => ({
+          point,
+          article:
+            (await getArticleForPoint(point.id)) ??
+            buildFallbackArticle(point),
+        })),
+      );
       const blockIds = nextEntries.flatMap(({ article }) =>
         article.subpoints.flatMap((subpoint) =>
           subpoint.blocks.map((block) => block.id),
